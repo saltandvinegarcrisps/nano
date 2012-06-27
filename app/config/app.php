@@ -1,6 +1,6 @@
 <?php
 
 return array(
-	'path' => '/intranet/web/',
+	'path' => '/',
 	'encoding' => 'utf-8'
 );
