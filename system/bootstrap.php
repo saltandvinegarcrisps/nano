@@ -5,15 +5,6 @@
 */
 require PATH . 'system/helpers.php';
 
-/**
- *	Check our environment
- */
-if(has_php(5.3) === false) {
-	// echo and exit with some usful information
-	echo 'Roar requires PHP 5.3 or newer, your current environment is running PHP ' . PHP_VERSION;
-	exit(1);
-}
-
 /*
 	Register Globals Fix
 */
@@ -72,7 +63,7 @@ error_reporting(-1);
 /*
 	Localisation - Register the default timezone for the application.
 */
-date_default_timezone_set(Config::get('application.timezone', 'UTC'));
+date_default_timezone_set(Config::get('application.timezone'));
 
 /*
 	Set input
