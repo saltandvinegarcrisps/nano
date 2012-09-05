@@ -1,4 +1,6 @@
-<?php
+<?php namespace System;
+
+use FilesystemIterator;
 
 class Router {
 
@@ -13,19 +15,40 @@ class Router {
 		'(:all)' => '(.*)'
 	);
 
+	public static function load($path = null) {
+		if(is_null($path)) {
+			$path = APP . 'routes';
+		}
+
+		// register routes
+		$fi = new FilesystemIterator($path, FilesystemIterator::SKIP_DOTS);
+
+		foreach($fi as $file) {
+			if($file->isDir()) {
+				static::load($file->getPathname());
+			}
+
+			if($file->isFile() and $file->isReadable() and $file->getExtension() == 'php') {
+				require $file->getPathname();
+			}
+		}
+	}
+
 	public static function register($method, $uri, $action) {
 		static::$routes[$method][trim($uri)] = $action;
 	}
 
 	public static function route($method, $uri) {
-		// remove path
-		$config = require APP . 'config/app' . EXT;
+		$path = Config::get('application.base_url') . Config::get('application.index_page');
 
-		if(strpos($uri, $config['path']) === 0) {
-			$uri = substr($uri, strlen($config['path']));
+		// remove path
+		if(strpos($uri, $path) === 0) {
+			$uri = substr($uri, strlen($path));
 		}
 
-		$uri = '/' . trim($uri, '/');
+		$uri = trim($uri, '/');
+
+		if($uri == '') $uri = '/';
 
 		if($route = static::match($method, $uri)) {
 			return $route;

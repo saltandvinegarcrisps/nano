@@ -1,13 +1,9 @@
 <?php
 
-// tick tock
-define('START', microtime(true));
+define('DS', '/');
 
-define('DS', DIRECTORY_SEPARATOR);
-define('EXT', '.php');
-
-define('PATH', pathinfo(dirname(__FILE__), PATHINFO_DIRNAME) . DS);
+define('PATH', dirname(dirname(__FILE__)) . DS);
 define('APP', PATH . 'app' . DS);
-define('SYS', PATH . 'sys' . DS);
+define('SYS', PATH . 'system' . DS);
 
-require APP . 'bootstrap' . EXT;
+require SYS . 'bootstrap.php';

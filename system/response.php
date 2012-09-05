@@ -1,4 +1,4 @@
-<?php
+<?php namespace System;
 
 class Response {
 
@@ -66,12 +66,12 @@ class Response {
 		return new static($output, $status, $headers);
 	}
 
-	public static function error($code, $data = array()) {
-		return new static(View::make('error/'.$code, $data), $code);
+	public static function error($code, $vars = array()) {
+		return new static(View::make('error/'.$code, $vars), $code);
 	}
 
 	public static function redirect($uri, $status = 302) {
-		return static::make('', $status)->header('Location', $uri);
+		return static::make('', $status)->header('Location', Uri::make($uri));
 	}
 
 	public function header($name, $value) {
@@ -88,7 +88,7 @@ class Response {
 		return static::$statuses[$this->status];
 	}
 
-	public function send_headers() {
+	public function headers() {
 		// If the server is using FastCGI, we need to send a slightly different
 		// protocol and status header than we normally would. Otherwise it will
 		// not call any custom scripts setup to handle 404 responses.
@@ -107,8 +107,7 @@ class Response {
 		// header to a default value that indicates to the browser that the
 		// response is HTML and that it uses the default encoding.
 		if(!isset($this->headers['content-type'])) {
-			$config = require APP . 'config/app' . EXT;
-			$this->header('content-type', 'text/html; charset=' . $config['encoding']);
+			$this->header('content-type', 'text/html; charset=' . Config::get('application.encoding'));
 		}
 
 		// Once the framework controlled headers have been sentm, we can
@@ -119,10 +118,19 @@ class Response {
 		}
 	}
 
-	public function send() {
-		if(headers_sent() === false) {
-			$this->send_headers();
+	public function cookies() {
+		// All of the cookies for the response are actually stored on the
+		// Cookie class until we're ready to send the response back to
+		// the browser. This allows our cookies to be set easily.
+		foreach(Cookie::$jar as $cookie) {
+			call_user_func_array('setcookie', array_values($cookie));
 		}
+	}
+
+	public function send() {
+		$this->headers();
+
+		$this->cookies();
 
 		echo $this->output;
 	}

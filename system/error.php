@@ -1,4 +1,4 @@
-<?php
+<?php namespace System;
 
 class Error {
 
@@ -19,14 +19,14 @@ class Error {
 	public static function native($code, $error, $file, $line) {
 		if(error_reporting() === 0) return;
 
-		static::exception(new ErrorException($error, $code, 0, $file, $line));
+		static::exception(new \ErrorException($error, $code, 0, $file, $line));
 	}
 
 	public static function shutdown() {
 		if($error = error_get_last()) {
 			extract($error, EXTR_SKIP);
 
-			static::exception(new ErrorException($message, $type, 0, $file, $line));
+			static::exception(new \ErrorException($message, $type, 0, $file, $line));
 		}
 	}
 

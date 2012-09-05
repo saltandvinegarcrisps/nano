@@ -1,4 +1,4 @@
-<?php
+<?php namespace System;
 
 class View {
 
@@ -9,7 +9,7 @@ class View {
 	}
 
 	public function __construct($file, $vars = array()) {
-		$this->path = APP . 'views/' . $file . EXT;
+		$this->path = APP . 'views/' . $file . '.php';
 		$this->vars = array_merge($this->vars, $vars);
 	}
 

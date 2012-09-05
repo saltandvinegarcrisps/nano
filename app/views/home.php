@@ -23,7 +23,7 @@
 
 			<p>This is the default home page. All routes can be found at:</p>
 
-			<code>APP/routes.php</code>
+			<code>APP/routes/routes.php</code>
 
 			<p>And the view can be found at:</p>
 

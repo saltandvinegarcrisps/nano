@@ -1,0 +1,5 @@
+<?php
+
+/*
+	Application pre-processes
+*/

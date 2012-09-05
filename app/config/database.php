@@ -1,7 +1,21 @@
 <?php
 
 return array(
-	'username' => 'root',
-	'password' => '',
-	'database' => ''
+
+	'default' => 'mysql',
+
+	'fetch' => PDO::FETCH_OBJ,
+	
+	'connections' => array(
+
+		'mysql' => array(
+			'driver' => 'mysql',
+			'hostname' => 'localhost',
+			'username' => 'root',
+			'password' => '',
+			'database' => '',
+			'charset' => 'utf8'
+		)
+
+	)
 );

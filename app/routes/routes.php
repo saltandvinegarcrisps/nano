@@ -3,7 +3,7 @@
 /*
 	Home page
 */
-Route::get('/, /home', function() {
+Route::get('/', function() {
 	return new View('home');
 });
 
