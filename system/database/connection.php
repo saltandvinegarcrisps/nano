@@ -54,6 +54,22 @@ class Connection {
 		}
 	}
 
+	public function type($var) {
+		if(is_null($var)) {
+			return PDO::PARAM_NULL;
+		}
+
+		if(is_int($var)) {
+			return PDO::PARAM_INT;
+		}
+
+		if(is_bool($var)) {
+			return PDO::PARAM_BOOL;
+		}
+
+		return PDO::PARAM_STR;
+	}
+
 	public function execute($sql, $bindings = array()) {
 		// Each database operation is wrapped in a try / catch so we can wrap
 		// any database exceptions in our custom exception class, which will
@@ -61,9 +77,19 @@ class Connection {
 		try {
 			$statement = $this->pdo->prepare($sql);
 
+			// bind paramaters by data type
+			// test key to see if we have to bump the index by one
+			$zerobased = (strpos(key($bindings), ':') === 0) ? false : true;
+
+			foreach($bindings as $index => $bind) {
+				$key = $zerobased ? ($index + 1) : $index;
+
+				$statement->bindValue($key, $bind, $this->type($bind));
+			}
+
 			$start = microtime(true);
 
-			$result = $statement->execute($bindings);
+			$result = $statement->execute();
 		}
 		// If an exception occurs, we'll pass it into our custom exception
 		// and set the message to include the SQL and query bindings so

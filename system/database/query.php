@@ -1,7 +1,6 @@
 <?php namespace System\Database;
 
 use System\Database as DB;
-use System\Str;
 use System\Config;
 
 class Query {
@@ -9,7 +8,7 @@ class Query {
 	private $sql = '';
 	private $bindings = array();
 	private $wrapper = '`';
-	private $table, $select, $join, $where, $group, $order, $limit, $offset;
+	private $table, $select, $join, $where, $group = array(), $order = array(), $limit, $offset;
 	private $connection, $style;
 
 	private function wrap($value) {
@@ -69,6 +68,7 @@ class Query {
 	*/
 	public function join($table, $left, $operator, $right, $type = 'INNER') {
 		$this->join .= ' ' . $type . ' JOIN ' . $this->wrap($table) . ' ON (' . $this->wrap($left) . ' ' . $operator . ' ' . $this->wrap($right) . ')';
+
 		return $this;
 	}
 
@@ -82,23 +82,46 @@ class Query {
 	public function where($column, $operator, $value) {
 		$this->where .= (empty($this->where) ? ' WHERE ' : ' AND ') . $this->wrap($column) . ' ' . $operator . ' ?';
 		$this->bindings[] = $value;
+
 		return $this;
 	}
 
 	public function or_where($column, $operator, $value) {
 		$this->where .= ' OR ' . $this->wrap($column) . ' ' . $operator . ' ?';
 		$this->bindings[] = $value;
+
+		return $this;
+	}
+
+	public function where_in($column, $keys) {
+		if(count($keys)) {
+			$instance = $this->connection->pdo;
+
+			$keys = array_map(function($string) use ($instance) {
+				return $instance->quote($string);
+			}, $keys);
+
+			$this->where .= (empty($this->where) ? ' WHERE ' : ' AND ') . $this->wrap($column) . ' IN (' . implode(',', $keys) . ')';
+		}
+
+		return $this;
+	}
+
+	public function where_is_null($column) {
+		$this->where .= (empty($this->where) ? ' WHERE ' : ' AND ') . $this->wrap($column) . ' IS NULL';
+
+		return $this;
+	}
+
+	public function or_where_is_null($column) {
+		$this->where .= ' OR ' . $this->wrap($column) . ' IS NULL';
+
 		return $this;
 	}
 
 	/*
 		MySQL Sorting
 	*/
-	public function order_by($column, $mode = 'ASC') {
-		$this->order = ' ORDER BY ' . $this->wrap($column) . ' ' . Str::upper($mode);
-		return $this;
-	}
-
 	public function take($num) {
 		$this->limit = ' LIMIT ' . $num;
 		return $this;
@@ -109,8 +132,14 @@ class Query {
 		return $this;
 	}
 
+	public function order_by($column, $mode = 'ASC') {
+		$this->order[] = $this->wrap($column) . ' ' . strtoupper($mode);
+		return $this;
+	}
+
 	public function group_by($column) {
-		$this->group = ' GROUP BY ' . $this->wrap($column);
+		$this->group[] = $this->wrap($column);
+
 		return $this;
 	}
 
@@ -119,7 +148,11 @@ class Query {
 	*/
 	public function build() {
 		$select = empty($this->select) ? '*' : $this->columnizer($this->select);
-		return 'SELECT ' . $select . ' FROM ' . $this->table . $this->join . $this->where . $this->group . $this->order . $this->limit . $this->offset;
+		
+		$ordering = count($this->order) ? ' ORDER BY ' . implode(', ', $this->order) : '';
+		$grouping = count($this->group) ? ' GROUP BY ' . implode(', ', $this->group) : '';
+
+		return 'SELECT ' . $select . ' FROM ' . $this->table . $this->join . $this->where . $grouping . $ordering . $this->limit . $this->offset;
 	}
 
 	/*

@@ -34,7 +34,12 @@ class Paginator {
 			for($i = 0; $i < $pages; $i++) {
 				$page = $i + 1;
 
-				$html .= ' <a href="' . $this->url . '/' . $page . '">' . $page . '</a> ';
+				if($page == $this->page) {
+					$html .= ' <strong>' . $page . '</strong> ';
+				}
+				else {
+					$html .= ' <a href="' . $this->url . '/' . $page . '">' . $page . '</a> ';
+				}
 			}
 
 			if($this->page < $pages) {

@@ -1,6 +1,5 @@
 <?php namespace System;
 
-// mbstring support
 define('MB_STRING', function_exists('mb_get_info'));
 
 class Str {
@@ -9,51 +8,32 @@ class Str {
 		return Config::get('application.encoding');
 	}
 
-	/**
-	 * Convert HTML characters to entities.
-	 */
 	public static function entities($value) {
 		return htmlentities($value, ENT_QUOTES, static::encoding(), false);
 	}
 
-	/**
-	 * Convert a string to lowercase.
-	 */
 	public static function lower($value) {
 		return MB_STRING ? mb_strtolower($value, static::encoding()) : strtolower($value);
 	}
 
-	/**
-	 * Convert a string to uppercase.
-	 */
 	public static function upper($value) {
 		return MB_STRING ? mb_strtoupper($value, static::encoding()) : strtoupper($value);
 	}
 
-	/**
-	 * Convert a string to title case (ucwords).
-	 */
+	public static function length($value) {
+		return MB_STRING ? mb_strlen($value, static::encoding()) : strlen($value);
+	}
+
 	public static function title($value) {
 		return MB_STRING ? mb_convert_case($value, MB_CASE_TITLE, static::encoding()) : ucwords(strtolower($value));
 	}
 
-	/**
-	 * Generate a random alpha-numeric string.
-	 */
 	public static function random($length = 16) {
-		$pool = str_split('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', 1);
-		$value = '';
+		$pool = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
-		for($i = 0; $i < $length; $i++)  {
-			$value .= $pool[mt_rand(0, 61)];
-		}
-
-		return $value;
+		return substr(str_shuffle(str_repeat($pool, 5)), 0, $length);
 	}
 
-	/**
-	 * Truncate a sentence by words
-	 */
 	public static function truncate($str, $limit = 10, $elipse = ' [...]') {
 		$words = preg_split('/\s+/', $str);
 
