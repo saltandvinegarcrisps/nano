@@ -1,15 +1,19 @@
 <!doctype html>
 <html lang="en">
 	<head>
-		<meta charset="utf-8" />
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 		<title>Nano &mdash; A really small php 5 boiler plate</title>
+		<meta name="author" content="">
+		<meta name="description" content="">
+		<meta name="viewport" content="width=device-width">
 
 		<!--[if lt IE 9]>
 		<script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
 		<![endif]-->
 
-		<link rel="stylesheet" href="/assets/css/normalize.css" type="text/css">
-		<link rel="stylesheet" href="/assets/css/styles.css" type="text/css">
+		<link rel="stylesheet" href="<?php echo Html::asset('assets/css/normalize.css'); ?>" type="text/css">
+		<link rel="stylesheet" href="<?php echo Html::asset('assets/css/styles.css'); ?>" type="text/css">
 		<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Actor" type="text/css">
 	</head>
 	<body>
