@@ -46,7 +46,7 @@ class Form {
 
 		$params = is_array($data) ? $data : array();
 
-		return '<input' . static::attributes(array_merge($defaults, $params)) . ' />';
+		return '<input' . static::attributes(array_merge($defaults, $params)) . '>';
 	}
 
 	public static function hidden($data, $value = '') {
@@ -97,7 +97,7 @@ class Form {
 		}
 
 		$params = is_array($data) ? $data : array();
-		
+
 		return '<textarea' . static::attributes(array_merge($defaults, $params)) . '>' . $val . '</textarea>';
 	}
 
@@ -122,14 +122,14 @@ class Form {
 
 				foreach($val as $grp_key => $grp_val) {
 					$sel = in_array($grp_key, $selected) ? ' selected="selected"' : '';
-					
+
 					$form .= '<option value="' . $grp_key . '"' . $sel . '>' . $grp_val . '</option>';
 				}
 
 				$form .= '</optgroup>';
 			} else {
 				$sel = in_array($key, $selected) ? ' selected="selected"' : '';
-				
+
 				$form .= '<option value="' . $key . '"' . $sel . '>' . $val . '</option>';
 			}
 		}
