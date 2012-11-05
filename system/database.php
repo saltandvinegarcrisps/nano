@@ -4,7 +4,7 @@ use PDO, System\Database\Connection;
 
 class Database {
 
-	private static $connections = array();
+	public static $connections = array();
 
 	public static function connection($connection = null) {
 		if(is_null($connection)) $connection = Config::get('database.default');
@@ -24,9 +24,19 @@ class Database {
 
 	public static function connect($config) {
 		// build dns string
-		$dsn = $config['driver'] . ':dbname=' . $config['database'] . ';host=' . $config['hostname'];
+		$parts = array('dbname=' . $config['database'], 'host=' . $config['hostname']);
 
-		return new PDO($dsn, $config['username'], $config['password']);
+		if(isset($config['port'])) {
+			$parts[] = 'port=' . $config['port'];
+		}
+
+		if(isset($config['charset'])) {
+			$parts[] = 'charset=' . $config['charset'];
+		}
+
+		$dsn = 'mysql:' . implode(';', $parts);
+
+		return new PDO($dsn, $config['username'], $config['password'], array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION));
 	}
 
 	public static function __callStatic($method, $parameters) {

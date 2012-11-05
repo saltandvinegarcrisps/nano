@@ -1,10 +1,11 @@
 <?php namespace System\Database;
 
-use PDO, PDOStatement;
+use System\Config;
+use PDO, PDOStatement, PDOException, Exception;
 
 class Connection {
 
-	public $pdo, $config;
+	public $pdo, $config, $queries = array();
 
 	public function __construct(PDO $pdo, $config) {
 		$this->pdo = $pdo;
@@ -20,7 +21,7 @@ class Connection {
 		try {
 			call_user_func($callback);
 		}
-		catch(\Exception $e) {
+		catch(PDOException $e) {
 			$this->pdo->rollBack();
 
 			throw $e;
@@ -90,12 +91,16 @@ class Connection {
 			$start = microtime(true);
 
 			$result = $statement->execute();
+
+			$this->queries[] = array($statement->queryString, $bindings);
 		}
 		// If an exception occurs, we'll pass it into our custom exception
 		// and set the message to include the SQL and query bindings so
 		// debugging is much easier on the developer.
-		catch(\Exception $exception) {
-			$exception = new Exception($sql, $bindings, $exception);
+		catch(PDOException $exception) {
+			$error = $exception->getMessage() . str_repeat("\n", 3) . $sql;
+
+			$exception = new Exception($error, 0, $exception);
 
 			throw $exception;
 		}
