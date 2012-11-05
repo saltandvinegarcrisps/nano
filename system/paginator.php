@@ -15,24 +15,29 @@ class Paginator {
 		$this->count = $count;
 		$this->page = $page;
 		$this->perpage = $perpage;
-		$this->url = $url;
+		$this->url = rtrim($url, '/');
 	}
 
 	public function links() {
 		$html = '';
 
 		$pages = ceil($this->count / $this->perpage);
+		$range = 4;
 
 		if($pages > 1) {
 
 			if($this->page > 1) {
 				$page = $this->page - 1;
 
-				$html = '<a href="' . $this->url . '/' . $page . '">Previous</a>';
+				$html = '<a href="' . $this->url . '">First</a> <a href="' . $this->url . '/' . $page . '">Previous</a>';
 			}
 
-			for($i = 0; $i < $pages; $i++) {
+			for($i = $this->page - $range; $i < $this->page + $range; $i++) {
+				if($i < 0) continue;
+
 				$page = $i + 1;
+
+				if($page > $pages) break;
 
 				if($page == $this->page) {
 					$html .= ' <strong>' . $page . '</strong> ';
@@ -45,7 +50,7 @@ class Paginator {
 			if($this->page < $pages) {
 				$page = $this->page + 1;
 
-				$html .= '<a href="' . $this->url . '/' . $page . '">Next</a>';
+				$html .= '<a href="' . $this->url . '/' . $page . '">Next</a> <a href="' . $this->url . '/' . $pages . '">Last</a>';
 			}
 
 		}
