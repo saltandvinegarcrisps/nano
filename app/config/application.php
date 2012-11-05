@@ -2,10 +2,10 @@
 
 return array(
 	// Application URL
-	'base_url' => '/',
+	'url' => rtrim(dirname($_SERVER['SCRIPT_NAME']), '/'),
 
 	// Application Index
-	'index_page' => 'index.php',
+	'index' => 'index.php',
 
 	// Application Timezone
 	'timezone' => 'Europe/London',

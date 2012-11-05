@@ -16,9 +16,7 @@ class Router {
 	);
 
 	public static function load($path = null) {
-		if(is_null($path)) {
-			$path = APP . 'routes';
-		}
+		if(is_null($path)) $path = APP . 'routes';
 
 		// register routes
 		$fi = new FilesystemIterator($path, FilesystemIterator::SKIP_DOTS);
@@ -28,9 +26,14 @@ class Router {
 				static::load($file->getPathname());
 			}
 
-			if($file->isFile() and $file->isReadable() and $file->getExtension() == 'php') {
+			if($file->isFile() and $file->isReadable() and pathinfo($file->getPathname(), PATHINFO_EXTENSION) == 'php') {
 				require $file->getPathname();
 			}
+		}
+
+		// sorting
+		foreach(array_keys(static::$routes) as $method) {
+			krsort(static::$routes[$method]);
 		}
 	}
 
@@ -39,17 +42,6 @@ class Router {
 	}
 
 	public static function route($method, $uri) {
-		$path = Config::get('application.base_url') . Config::get('application.index_page');
-
-		// remove path
-		if(strpos($uri, $path) === 0) {
-			$uri = substr($uri, strlen($path));
-		}
-
-		$uri = trim($uri, '/');
-
-		if($uri == '') $uri = '/';
-
 		if($route = static::match($method, $uri)) {
 			return $route;
 		}
