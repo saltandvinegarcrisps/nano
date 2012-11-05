@@ -3,7 +3,7 @@
 class Config {
 
 	public static $items = array(),  $cache = array(), $mapped = array();
-	
+
 	public static function get($key, $default = null) {
 		// return cached
 		if(isset(static::$cache[$key])) {
@@ -13,7 +13,7 @@ class Config {
 		// load config file
 		$file = current(explode('.', $key));
 
-		if(!array_key_exists($file, static::$mapped)) {
+		if( ! array_key_exists($file, static::$mapped)) {
 			static::load($file);
 		}
 
@@ -31,15 +31,25 @@ class Config {
 		array_forget(static::$items, $key);
 	}
 
-	public static function load($file) {
-		if(in_array($file, static::$mapped)) return;
+	public static function path() {
+		if(defined('ENV')) {
+			$path = APP . 'config' . DS . ENV . DS;
 
-		if(is_readable($path = APP . 'config/' . $file . '.php')) {
+			if(file_exists($path)) {
+				return $path;
+			}
+		}
+
+		return APP . 'config' . DS;
+	}
+
+	public static function load($file) {
+		if(is_readable($path = static::path() . $file . '.php')) {
 			// add file to mapped files
 			static::$mapped[] = $file;
 
 			// get returned array
-			static::$items[$file] = require $path;
+			return static::$items[$file] = require $path;
 		}
 	}
 
