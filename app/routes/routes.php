@@ -4,7 +4,7 @@
 	Home page
 */
 Route::get('/', function() {
-	return new View('home');
+	return View::make('home');
 });
 
 /*
