@@ -55,6 +55,18 @@ class Connection {
 		}
 	}
 
+	public function first($sql, $bindings = array()) {
+		list($statement, $result) = $this->execute($sql, $bindings);
+
+		if($result) return $statement->fetch(Config::get('database.fetch'));
+	}
+
+	public function column($sql, $bindings = array()) {
+		list($statement, $result) = $this->execute($sql, $bindings);
+
+		if($result) return $statement->fetchColumn();
+	}
+
 	public function type($var) {
 		if(is_null($var)) {
 			return PDO::PARAM_NULL;
@@ -100,7 +112,8 @@ class Connection {
 		catch(PDOException $exception) {
 			$message = explode(':', $exception->getMessage());
 
-			$error = 'Database Error:' . end($message) . str_repeat("\n", 3) . $sql;
+			$error = '<strong>Database Error:</strong>' . end($message) . str_repeat("\n", 3) .
+				'<strong>SQL: </strong>' . $sql;
 
 			$exception = new Exception($error, 0, $exception);
 
