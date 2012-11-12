@@ -13,6 +13,10 @@ class Uri {
 			$base .= static::$index . '/';
 		}
 
+		if(starts_with($uri, $base)) {
+			return $uri;
+		}
+
 		return $base . $uri;
 	}
 
