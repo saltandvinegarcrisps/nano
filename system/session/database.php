@@ -1,4 +1,4 @@
-<?php namespace System\Session\Drivers;
+<?php namespace System\Session;
 
 /**
  * Nano

@@ -1,7 +1,6 @@
 <?php
 
 return array(
-
 	// Here you simply specify the error levels that should be ignored by the
 	// Laravel error handler. These levels will still be logged; however, no
 	// information about about them will be displayed.
@@ -20,5 +19,4 @@ return array(
 	// be called anytime an error occurs within your application and error
 	// logging is enabled.
 	'logger' => function($exception) {}
-
 );

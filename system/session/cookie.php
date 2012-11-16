@@ -1,4 +1,4 @@
-<?php namespace System\Session\Drivers;
+<?php namespace System\Session;
 
 /**
  * Nano
@@ -10,7 +10,8 @@
  * @link		http://madebykieron.co.uk
  */
 
-use System\Config, System\Cookie as C;
+use System\Config;
+use System\Cookie as C;
 
 class Cookie extends Driver {
 

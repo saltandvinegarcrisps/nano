@@ -13,7 +13,7 @@
 /*
 	Include application helpers
 */
-require PATH . 'system/helpers.php';
+require PATH . 'system/helpers' . EXT;
 
 /*
 	Register Globals Fix
@@ -42,9 +42,9 @@ if(magic_quotes()) {
 }
 
 // get our autoloader
-require PATH . 'system/error.php';
-require PATH . 'system/config.php';
-require PATH . 'system/autoload.php';
+require PATH . 'system/error' . EXT;
+require PATH . 'system/config' . EXT;
+require PATH . 'system/autoload' . EXT;
 
 // register auto loader
 spl_autoload_register(array('System\\Autoloader', 'load'));
@@ -106,7 +106,7 @@ switch(Request::method()) {
 /*
 	Start application
 */
-if(is_readable($start = APP . 'start.php')) require $start;
+if(is_readable($start = APP . 'start' . EXT)) require $start;
 
 Session::load();
 

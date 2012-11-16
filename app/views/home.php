@@ -13,8 +13,8 @@
 		<![endif]-->
 
 		<link rel="stylesheet" href="<?php echo asset('assets/css/normalize.css'); ?>" type="text/css">
+		<link rel="stylesheet" href="<?php echo asset('assets/css/grid.css'); ?>" type="text/css">
 		<link rel="stylesheet" href="<?php echo asset('assets/css/styles.css'); ?>" type="text/css">
-		<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Actor" type="text/css">
 	</head>
 	<body>
 

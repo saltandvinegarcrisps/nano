@@ -54,7 +54,7 @@ class Config {
 	}
 
 	public static function load($file) {
-		if(is_readable($path = static::path() . $file . '.php')) {
+		if(is_readable($path = static::path() . $file . EXT)) {
 			// add file to mapped files
 			static::$mapped[] = $file;
 

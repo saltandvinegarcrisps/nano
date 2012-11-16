@@ -5,7 +5,7 @@ return array(
 	/*
 		Session Driver
 		The name of the session driver used by your application.
-		Drivers: 'cookie', 'database'.
+		Drivers: 'cookie', 'database', 'memcache'.
 	*/
 
 	'driver' => 'cookie',
@@ -44,7 +44,7 @@ return array(
 	*/
 
 	'path' => '/',
-	
+
 	/*
 		Session Cookie Domain
 		The domain for which the session cookie is available.
