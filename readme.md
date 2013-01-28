@@ -15,7 +15,7 @@ Nano size PHP 5.3+ framework
 - Forms
 - Html
 - Input (XSS filtering)
-- trings (multibyte support)
+- Strings (multibyte support)
 
 #### Utilities
 
@@ -24,7 +24,7 @@ Nano size PHP 5.3+ framework
 - Csrf
 - Json
 - Pagination
-- alidation
+- Validation
 
 #### Hello world
 
