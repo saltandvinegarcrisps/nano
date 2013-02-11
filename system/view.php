@@ -3,43 +3,86 @@
 /**
  * Nano
  *
- * Lightweight php framework
+ * Just another php framework
  *
  * @package		nano
- * @author		k. wilson
  * @link		http://madebykieron.co.uk
+ * @copyright	http://unlicense.org/
  */
 
 class View {
 
-	public $path, $vars = array();
+	/**
+	 * The current path to view file
+	 *
+	 * @var string
+	 */
+	public $path;
 
-	public static function make($file, $vars = array()) {
-		return new static($file, $vars);
+	/**
+	 * Array of view variables
+	 *
+	 * @var array
+	 */
+	public $vars = array();
+
+	/**
+	 * Create a instance or the View class for chaining
+	 *
+	 * @param string
+	 * @param array
+	 * @return object
+	 */
+	public static function create($path, $vars = array()) {
+		return new static($path, $vars);
 	}
 
+	/**
+	 * Create a instance of a View class for chaining using a
+	 * method for the file name
+	 *
+	 * @example View::home(array('title' => 'Home'));
+	 *
+	 * @param string
+	 * @param array
+	 * @return object
+	 */
+	public static function __callStatic($method, $arguments) {
+		$vars = count($arguments) ? current($arguments) : array();
+		return new static($method, $vars);
+	}
+
+	/**
+	 * Create a instance or the View class
+	 *
+	 * @param string
+	 * @param array
+	 */
 	public function __construct($file, $vars = array()) {
 		$this->path = APP . 'views/' . $file . EXT;
 		$this->vars = array_merge($this->vars, $vars);
 	}
 
-	public function nest($name, $file, $vars = array()) {
-		$this->vars[$name] = static::make($file, $vars)->render();
-		return $this;
-	}
+	/**
+	 * Render the view
+	 *
+	 * @return string
+	 */
+	public function yield() {
+		if(function_exists('mb_http_output')) {
+			mb_http_output(Config::app('encoding'));
 
-	public function render() {
-		ob_start();
+			ob_start('mb_output_handler');
+		}
+		else {
+			ob_start();
+		}
 
 		extract($this->vars);
 
 		require $this->path;
 
 		return ob_get_clean();
-	}
-
-	public function __toString() {
-		return $this->render();
 	}
 
 }

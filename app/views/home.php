@@ -3,10 +3,11 @@
 	<head>
 		<meta charset="utf-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-		<title>Nano &mdash; A really small php 5 boiler plate</title>
+		<title><?php echo $welcome; ?> &mdash; Nano</title>
 		<meta name="author" content="">
 		<meta name="description" content="">
 		<meta name="viewport" content="width=device-width">
+		<meta name="processing-time" content="<?php echo round(microtime(true) - START_TIME, 4); ?>ms">
 
 		<!--[if lt IE 9]>
 		<script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
@@ -14,26 +15,25 @@
 
 		<link rel="stylesheet" href="<?php echo asset('assets/css/normalize.css'); ?>" type="text/css">
 		<link rel="stylesheet" href="<?php echo asset('assets/css/grid.css'); ?>" type="text/css">
-		<link rel="stylesheet" href="<?php echo asset('assets/css/styles.css'); ?>" type="text/css">
+		<link rel="stylesheet" href="<?php echo asset('assets/css/style.css'); ?>" type="text/css">
 	</head>
 	<body>
 
-		<div class="container">
-
+		<section role="main">
 			<header>
-				<h1>Welcome to Nano</h1>
-				<h2>A really small php 5 boiler plate</h2>
+				<h1><?php echo $welcome; ?></h1>
 			</header>
 
 			<p>This is the default home page. All routes can be found at:</p>
 
-			<code>APP/routes/routes.php</code>
+			<code>APP/routes.php</code>
 
 			<p>And the view can be found at:</p>
 
 			<code>APP/views/home.php</code>
 
-		</div>
+			<p><a href="https://github.com/rwarasaurus/nano">Fork me on github</a></p>
+		</section>
 
     </body>
 </html>

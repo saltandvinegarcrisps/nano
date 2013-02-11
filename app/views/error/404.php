@@ -6,8 +6,21 @@
 
 		<style>
 			body {
-				margin: 0; padding: 1em 2em;
-				font: 1em/1.625em sans-serif;
+				font-family: "Open Sans", arial, sans-serif;
+				background: #FFF;
+				color: #333;
+				margin: 2em;
+			}
+			a, a:visited {
+				color: #4DBCE9;
+			}
+			a:hover, a:active {
+				color: #26ADE4;
+			}
+			code {
+				background: #D1E751;
+				padding: 2px 6px;
+				border-radius: 4px;
 			}
 		</style>
 

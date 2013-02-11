@@ -3,43 +3,74 @@
 /**
  * Nano
  *
- * Lightweight php framework
+ * Just another php framework
  *
  * @package		nano
- * @author		k. wilson
  * @link		http://madebykieron.co.uk
+ * @copyright	http://unlicense.org/
  */
+
+use System\Arr;
+use System\Session;
 
 class Input {
 
-	public static $array = array();
+	/**
+	 * Array or request vars
+	 *
+	 * @var array
+	 */
+	public static $array;
 
-	public static function get($key, $default = null) {
-		return array_get(static::$array, $key, $default);
-	}
+	/**
+	 * Try and collect the request input determinded
+	 * by the request method
+	 *
+	 * @param string
+	 */
+	public static function detect($method) {
+		switch($method) {
+			case 'GET':
+				$query = parse_url(Arr::get($_SERVER, 'REQUEST_URI'), PHP_URL_QUERY);
+				parse_str($query, static::$array);
+				break;
 
-	public static function get_array($arr, $default = null) {
-		$input = array();
+			case 'POST':
+				static::$array = $_POST;
+				break;
 
-		foreach($arr as $key) {
-			$input[$key] = static::get($key, $default);
+			default:
+				parse_str(file_get_contents('php://input'), static::$array);
 		}
-
-		return $input;
 	}
 
-	public static function old($key, $default = null) {
-		$array = Session::get(':old:', array());
-
-		return array_get($array, $key, $default);
+	/**
+	 * Get a element from the input array
+	 *
+	 * @param string
+	 * @param mixed
+	 * @return mixed
+	 */
+	public static function get($key, $fallback = null) {
+		return Arr::get(static::$array, $key, $fallback);
 	}
 
+	/**
+	 * Save the input array for the next request
+	 */
 	public static function flash() {
-		Session::put(':new:', static::$array);
+		Session::flash(static::$array);
 	}
 
-	public static function filter($key, $default = null) {
-		return filter_var(static::get($key), FILTER_SANITIZE_STRING);
+	/**
+	 * Get a element from the previous request input array
+	 *
+	 * @param string
+	 * @param mixed
+	 * @return mixed
+	 */
+	public static function previous($key, $fallback = null) {
+		return Arr::get(Session::flash(), $key, $fallback);
 	}
 
 }

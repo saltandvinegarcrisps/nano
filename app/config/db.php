@@ -1,22 +1,22 @@
 <?php
 
 return array(
-
-	'default' => 'mysql',
-
-	'fetch' => PDO::FETCH_OBJ,
+	'default' => 'sqlite',
 
 	'connections' => array(
+		'sqlite' => array(
+			'driver' => 'sqlite',
+			'database' => ':memory:', //APP . 'storage/databases/app.db'
+		),
 
 		'mysql' => array(
 			'driver' => 'mysql',
 			'hostname' => 'localhost',
-			'post' => 3306,
+			'port' => 3306,
 			'username' => 'root',
 			'password' => '',
 			'database' => '',
 			'charset' => 'utf8'
 		)
-
 	)
 );

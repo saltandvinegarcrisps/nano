@@ -4,20 +4,23 @@
 		<meta charset="utf-8">
 		<title>500 - Internal Server Error</title>
 
-		<style type="text/css">
+		<style>
 			body {
-				background: #fff;
-				font-family: sans-serif;
-				color: #3f3f3f;
-				margin: 0;
-				padding: 40px;
+				font-family: "Open Sans", arial, sans-serif;
+				background: #FFF;
+				color: #333;
+				margin: 2em;
 			}
-			h1 {
-				padding: 0;
-				margin: 0;
+			a, a:visited {
+				color: #4DBCE9;
 			}
-			a {
-				color: #444;
+			a:hover, a:active {
+				color: #26ADE4;
+			}
+			code {
+				background: #D1E751;
+				padding: 2px 6px;
+				border-radius: 4px;
 			}
 		</style>
 

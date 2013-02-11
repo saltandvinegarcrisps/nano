@@ -6,6 +6,11 @@ return array(
 	'memcache' => array(
 		'host' => 'localhost',
 		'port' => 11211
+	),
+
+	'memcached' => array(
+		'host' => 'localhost',
+		'port' => 11211
 	)
 
 );
