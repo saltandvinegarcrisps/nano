@@ -34,7 +34,7 @@ class Builder {
 		}
 
 		if(count($this->sortby)) {
-			$sql .= ' SORT BY ' . implode(', ', $this->sortby);
+			$sql .= ' ORDER BY ' . implode(', ', $this->sortby);
 		}
 
 		if($this->limit) {
@@ -75,13 +75,15 @@ class Builder {
 	 */
 	public function build_update($row) {
 		$placeholders = array();
+		$values = array();
 
 		foreach($row as $key => $value) {
 			$placeholders[] = $this->wrap($key) . ' = ?';
-			$this->bind[] = $value;
+			$values[] = $value;
 		}
 
 		$update = implode(', ', $placeholders);
+		$this->bind = array_merge($values, $this->bind);
 
 		return 'UPDATE ' . $this->wrap($this->table) . ' SET ' . $update . $this->build();
 	}
@@ -93,8 +95,12 @@ class Builder {
 	 * @return string
 	 */
 	public function build_select($columns = null) {
-		return 'SELECT ' . (is_null($columns) ? '*' : $this->wrap($columns)) .
-			' FROM ' . $this->wrap($this->table) . $this->build();
+		if(is_array($columns) and count($columns)) {
+			$columns = $this->wrap($columns);
+		}
+		else $columns = '*';
+
+		return 'SELECT ' . $columns . ' FROM ' . $this->wrap($this->table) . $this->build();
 	}
 
 	/**
@@ -103,7 +109,7 @@ class Builder {
 	 * @param array
 	 * @return string
 	 */
-	public function build_delete($columns) {
+	public function build_delete() {
 		return 'DELETE FROM ' . $this->wrap($this->table) . $this->build();
 	}
 

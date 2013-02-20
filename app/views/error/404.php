@@ -2,7 +2,7 @@
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
-		<title>404</title>
+		<title>404 - File Not Found</title>
 
 		<style>
 			body {
@@ -43,12 +43,10 @@
 		-->
 	</head>
 	<body>
-
 		<h1>404</h1>
 
 		<p>The page <code><?php echo Uri::current(); ?></code> was not found.</p>
 
 		<p>Try the <a href="/">homepage</a></p>
-
 	</body>
 </html>

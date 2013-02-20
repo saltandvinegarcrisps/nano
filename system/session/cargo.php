@@ -10,6 +10,7 @@
  * @copyright	http://unlicense.org/
  */
 
+use System\Arr;
 use System\Config;
 use System\Cookie;
 
@@ -32,9 +33,9 @@ class Cargo {
 	/**
 	 * Session data array
 	 *
-	 * @var int
+	 * @var array
 	 */
-	public $data;
+	public $data = array();
 
 	/**
 	 * Create a new instance of the cargo session container
@@ -43,9 +44,6 @@ class Cargo {
 	 */
 	public function __construct($driver) {
 		$this->driver = $driver;
-
-		// use the app key to create a unique flash index name
-		$this->key = Config::app('key');
 	}
 
 	/**
@@ -56,16 +54,17 @@ class Cargo {
 		extract($this->driver->config);
 
 		// read session ID from cookie
-		$this->id = Cookie::read($cookie, noise(40));
+		$this->id = Cookie::read($cookie, 0);
 
 		// make sure we have some data, if not lets start again
-		if(is_null($this->data = $this->driver->read($this->id))) {
-			// Cargo has expired lets create a new ID to prevent session fixation
-			// https://www.owasp.org/index.php/Session_fixation
-			$this->id = noise(40);
-
+		if($data = $this->driver->read($this->id)) {
 			// set the data to an empty array
-			$this->data = array();
+			$this->data = $data;
+		}
+		else {
+			// Cargo has expired lets create a new ID to prevent session fixation
+			// @see https://www.owasp.org/index.php/Session_fixation
+			$this->id = noise(32);
 		}
 	}
 
@@ -79,9 +78,9 @@ class Cargo {
 		// save session ID
 		Cookie::write($cookie, $this->id, ($expire_on_close ? 0 : $lifetime));
 
-		// flash io
-		$this->data[$this->key . '_flash_out'] = $this->get($this->key . '_flash_in', array());
-		$this->data[$this->key . '_flash_in'] = array();
+		// rotate flash data
+		$this->put('_out', $this->get('_in', array()));
+		$this->put('_in', array());
 
 		// write payload to storage driver
 		$this->driver->write($this->id, $this->data);
@@ -94,11 +93,7 @@ class Cargo {
 	 * @param mixed
 	 */
 	public function get($key, $fallback = null) {
-		if(array_key_exists($key, $this->data)) {
-			return $this->data[$key];
-		}
-
-		return $fallback;
+		return Arr::get($this->data, $key, $fallback);
 	}
 
 	/**
@@ -108,7 +103,7 @@ class Cargo {
 	 * @param mixed
 	 */
 	public function put($key, $value) {
-		$this->data[$key] = $value;
+		Arr::set($this->data, $key, $value);
 	}
 
 	/**
@@ -118,9 +113,7 @@ class Cargo {
 	 * @param mixed
 	 */
 	public function erase($key) {
-		if(array_key_exists($key, $this->data)) {
-			unset($this->data[$key]);
-		}
+		Arr::erase($this->data, $key);
 	}
 
 	/**
@@ -130,9 +123,11 @@ class Cargo {
 	 * @return mixed
 	 */
 	public function flash($data = null) {
-		if(is_null($data)) return $this->get($this->key . '_flash_out', array());
+		if(is_null($data)) {
+			return $this->get('_out', array());
+		}
 
-		$this->data[$this->key . '_flash_in'] = $data;
+		$this->put('_in', $data);
 	}
 
 }

@@ -16,6 +16,13 @@ use System\Database\Connector;
 class Sqlite extends Connector {
 
 	/**
+	 * Holds the php pdo instance
+	 *
+	 * @var object
+	 */
+	private $pdo;
+
+	/**
 	 * The sqlite left wrapper
 	 *
 	 * @var string

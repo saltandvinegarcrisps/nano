@@ -32,7 +32,11 @@ class Config {
 
 		// read the config file if we have one
 		if( ! array_key_exists($file = current($keys), static::$array)) {
-			static::$array[$file] = require APP . 'config' . DS . $file . EXT;
+
+			// is the file readable
+			if(is_readable($path = APP . 'config' . DS . $file . EXT)) {
+				static::$array[$file] = require $path;
+			}
 		}
 
 		return Arr::get(static::$array, $key, $fallback);

@@ -58,9 +58,20 @@ class View {
 	 * @param string
 	 * @param array
 	 */
-	public function __construct($file, $vars = array()) {
-		$this->path = APP . 'views/' . $file . EXT;
+	public function __construct($path, $vars = array()) {
+		$this->path = APP . 'views/' . $path . EXT;
 		$this->vars = array_merge($this->vars, $vars);
+	}
+
+	/**
+	 * Render a partial view
+	 *
+	 * @return string
+	 */
+	public function partial($name, $path, $vars = array()) {
+		$this->vars[$name] = static::create($path, $vars)->yield();
+
+		return $this;
 	}
 
 	/**
@@ -69,14 +80,7 @@ class View {
 	 * @return string
 	 */
 	public function yield() {
-		if(function_exists('mb_http_output')) {
-			mb_http_output(Config::app('encoding'));
-
-			ob_start('mb_output_handler');
-		}
-		else {
-			ob_start();
-		}
+		ob_start();
 
 		extract($this->vars);
 

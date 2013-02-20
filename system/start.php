@@ -16,6 +16,13 @@
 require PATH . 'system/boot' . EXT;
 
 /**
+ * Boot the application
+ */
+if(is_readable($run = APP . 'run' . EXT)) {
+	require $run;
+}
+
+/**
  * Set input
  */
 Input::detect(Request::method());
@@ -26,16 +33,9 @@ Input::detect(Request::method());
 Session::read();
 
 /**
- * Run the application
- */
-if(is_readable($run = APP . 'run' . EXT)) {
-	require $run;
-}
-
-/**
  * Route the request
  */
-$response = Router::create()->match(Request::method(), Uri::current())->run();
+$response = Router::create(Uri::current())->match(Request::method())->run();
 
 /**
  * Update session

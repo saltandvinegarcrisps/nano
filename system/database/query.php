@@ -172,7 +172,7 @@ class Query extends Builder {
 	 * @return string
 	 */
 	public function count() {
-		list($result, $statement) = DB::ask($this->build_select_count(), $this->bind);
+		list($result, $statement) = $this->connection->ask($this->build_select_count(), $this->bind);
 
 		return $statement->fetchColumn();
 	}
@@ -185,7 +185,7 @@ class Query extends Builder {
 	 * @return string
 	 */
 	public function column($columns = array(), $column_number = 0) {
-		list($result, $statement) = DB::ask($this->build_select($columns), $this->bind);
+		list($result, $statement) = $this->connection->ask($this->build_select($columns), $this->bind);
 
 		return $statement->fetchColumn($column_number);
 	}
@@ -196,10 +196,10 @@ class Query extends Builder {
 	 * @param array
 	 * @return object
 	 */
-	public function fetch($columns = array()) {
-		list($result, $statement) = DB::ask($this->build_select($columns), $this->bind);
+	public function fetch($columns = null) {
+		list($result, $statement) = $this->connection->ask($this->build_select($columns), $this->bind);
 
-		$statement->setFetchMode(PDO::FETCH_CLASS, $this->fetch_class);
+		$statement->setFetchMode(PDO::FETCH_CLASS|PDO::FETCH_PROPS_LATE, $this->fetch_class);
 
 		return $statement->fetch();
 	}
@@ -210,10 +210,10 @@ class Query extends Builder {
 	 * @param array
 	 * @return object
 	 */
-	public function get($columns = array()) {
-		list($result, $statement) = DB::ask($this->build_select($columns), $this->bind);
+	public function get($columns = null) {
+		list($result, $statement) = $this->connection->ask($this->build_select($columns), $this->bind);
 
-		$statement->setFetchMode(PDO::FETCH_CLASS, $this->fetch_class);
+		$statement->setFetchMode(PDO::FETCH_CLASS|PDO::FETCH_PROPS_LATE, $this->fetch_class);
 
 		return $statement->fetchAll();
 	}
@@ -225,7 +225,7 @@ class Query extends Builder {
 	 * @return object
 	 */
 	public function insert($row) {
-		list($result, $statement) = DB::ask($this->build_insert($row), $this->bind);
+		list($result, $statement) = $this->connection->ask($this->build_insert($row), $this->bind);
 
 		return $statement->rowCount();
 	}
@@ -237,9 +237,9 @@ class Query extends Builder {
 	 * @return int
 	 */
 	public function insert_get_id($row) {
-		list($result, $statement) = DB::ask($this->build_insert($row), $this->bind);
+		list($result, $statement) = $this->connection->ask($this->build_insert($row), $this->bind);
 
-		return $statement->lastInsertId();
+		return $this->connection->instance()->lastInsertId();
 	}
 
 	/**
@@ -249,7 +249,7 @@ class Query extends Builder {
 	 * @return int
 	 */
 	public function update($row) {
-		list($result, $statement) = DB::ask($this->build_update($row), $this->bind);
+		list($result, $statement) = $this->connection->ask($this->build_update($row), $this->bind);
 
 		return $statement->rowCount();
 	}
@@ -260,7 +260,7 @@ class Query extends Builder {
 	 * @return int
 	 */
 	public function delete() {
-		list($result, $statement) = DB::ask($this->build_delete(), $this->bind);
+		list($result, $statement) = $this->connection->ask($this->build_delete(), $this->bind);
 
 		return $statement->rowCount();
 	}
@@ -333,7 +333,7 @@ class Query extends Builder {
 	 * @return object
 	 */
 	public function sort($column, $mode = 'ASC') {
-		$this->sortby[] = $this->wrap($column) . ' ' . $mode;
+		$this->sortby[] = $this->wrap($column) . ' ' . strtoupper($mode);
 
 		return $this;
 	}

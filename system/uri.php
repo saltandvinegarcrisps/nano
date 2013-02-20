@@ -11,6 +11,7 @@
  */
 
 use ErrorException;
+use OverflowException;
 
 class Uri {
 
@@ -22,14 +23,30 @@ class Uri {
 	public static $current;
 
 	/**
+	 * Get a path relative to the application
+	 *
+	 * @param string
+	 * @return string
+	 */
+	public static function to($uri) {
+		$base = Config::app('url', '');
+
+		if($index = Config::app('index', '')) {
+			$index .= '/';
+		}
+
+		return rtrim($base, '/') . '/' . $index . ltrim($uri, '/');
+	}
+
+	/**
 	 * Get the current uri string
 	 *
 	 * @return string
 	 */
 	public static function current() {
-		if(static::$current) return static::$current;
+		if(is_null(static::$current)) static::$current = static::detect();
 
-		return static::detect();
+		return static::$current;
 	}
 
 	/**
@@ -42,13 +59,17 @@ class Uri {
 
 		foreach($try as $method) {
 			if($uri = Arr::get($_SERVER, $method)) {
-				if(($uri = parse_url($uri, PHP_URL_PATH)) === false) {
-					throw new ErrorException('Malformed URI');
+				// make sure the uri is not malformed
+				if($uri = parse_url($uri, PHP_URL_PATH)) {
+					return static::format($uri);
 				}
 
-				return (static::$current = static::format($uri));
+				// woah jackie, we found a bad'n
+				throw new ErrorException('Malformed URI');
 			}
 		}
+
+		throw new OverflowException('Uri was not detected. Make sure the PATH_INFO or REQUEST_URI is set.');
 	}
 
 	/**
@@ -59,21 +80,16 @@ class Uri {
 	 * @return string
 	 */
 	public static function format($uri) {
-		// decode hex values in uri
-		$uri = rawurldecode($uri);
-
-		// strip bad stuff
-		$uri = filter_var($uri, FILTER_SANITIZE_URL);
+		// Remove all characters except letters, digits and $-_.+!*'(),{}|\\^~[]`<>#%";/?:@&=.
+		$uri = filter_var(rawurldecode($uri), FILTER_SANITIZE_URL);
 
 		// remove script path/name
-		$uri = static::remove(Arr::get($_SERVER, 'SCRIPT_NAME'), $uri);
+		$uri = static::remove_script_name($uri);
 
-		// remove relative url and index file set in application
-		$index = Config::app('index');
-		$url = Config::app('url');
+		// remove the relative uri
+		$uri = static::remove_relative_uri($uri);
 
-		$uri = static::remove($index, static::remove($url, $uri));
-
+		// return argument if not empty or return a single slash
 		return trim($uri, '/') ?: '/';
 	}
 
@@ -86,13 +102,42 @@ class Uri {
 	 * @return string
 	 */
 	public static function remove($value, $uri) {
-		if( ! strlen($value)) return $uri;
+		// make sure our search value is a non-empty string
+		if(is_string($value) and strlen($value)) {
 
-		if(strpos($uri, $value) === 0) {
-			return substr($uri, strlen($value));
+			// if the search value is at the start sub it out
+			if(strpos($uri, $value) === 0) {
+				$uri = substr($uri, strlen($value));
+			}
 		}
 
 		return $uri;
+	}
+
+	/**
+	 * Remove the SCRIPT_NAME from the uri path
+	 *
+	 * @param string
+	 * @return string
+	 */
+	public static function remove_script_name($uri) {
+		return static::remove(Arr::get($_SERVER, 'SCRIPT_NAME'), $uri);
+	}
+
+	/**
+	 * Remove the relative path from the uri set in the application config
+	 *
+	 * @param string
+	 * @return string
+	 */
+	public static function remove_relative_uri($uri) {
+		$base = Config::app('url');
+
+		if($index = Config::app('index')) {
+			$index .= '/';
+		}
+
+		return static::remove($base . $index, $uri);
 	}
 
 }

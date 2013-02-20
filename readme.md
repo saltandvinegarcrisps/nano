@@ -6,7 +6,6 @@ Nano size PHP 5.3+ framework
 
 - PSR-0 Autoloading
 - Database (mysql, sqlite)
-- Hashing (Secure one way hashing with `crypt`)
 - RESTful Routing
 - Session management (database, memcache, cookies)
 

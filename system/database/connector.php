@@ -10,14 +10,9 @@
  * @copyright	http://unlicense.org/
  */
 
-abstract class Connector {
+use Exception;
 
-	/**
-	 * Holds the php pdo instance
-	 *
-	 * @var object
-	 */
-	private $pdo;
+abstract class Connector {
 
 	/**
 	 * All connectors will implement a function to return the pdo instance
@@ -25,5 +20,25 @@ abstract class Connector {
 	 * @param object PDO Object
 	 */
 	abstract public function instance();
+
+	/**
+	 * A simple database query wrapper
+	 *
+	 * @param string
+	 * @param array
+	 * @return array
+	 */
+	public function ask($sql, $arguments = array()) {
+		try {
+			$statement = $this->instance()->prepare($sql);
+			$result = $statement->execute($arguments);
+
+			return array($result, $statement);
+		}
+		catch(Exception $e) {
+			$error = 'Database Error: ' . $e->getMessage() . '</code></p><p><code>SQL: ' . trim($sql);
+			throw new Exception($error, 0, $e);
+		}
+	}
 
 }

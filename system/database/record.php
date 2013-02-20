@@ -40,7 +40,7 @@ abstract class Record {
 	 * @return object Record
 	 */
 	public static function find($id) {
-		return static::where(static::$primary, '=', $id)->fetch();
+		return static::where(static::$primary, '=', $id)->apply(get_called_class())->fetch();
 	}
 
 	/**
@@ -90,7 +90,7 @@ abstract class Record {
 	 * @return mixed
 	 */
 	public function __get($key) {
-		return Arr::get($this->data, $key);
+		return $this->data[$key];
 	}
 
 	/**
@@ -100,7 +100,7 @@ abstract class Record {
 	 * @param mixed
 	 */
 	public function __set($key, $value) {
-		Arr::set($this->data, $key, $value);
+		$this->data[$key] = $value;
 	}
 
 	/**
@@ -132,7 +132,7 @@ abstract class Record {
 	 * @return mixed
 	 */
 	public static function __callStatic($method, $arguments) {
-		$obj = Query::table(static::$table)->for(get_called_class());
+		$obj = Query::table(static::$table)->apply(get_called_class());
 
 		if(method_exists($obj, $method)) {
 			return call_user_func_array(array($obj, $method), $arguments);

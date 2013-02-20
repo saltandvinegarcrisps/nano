@@ -20,10 +20,20 @@ class Database extends Driver {
 	public function read($id) {
 		extract($this->config);
 
-		if($result = Query::table($table)->where('id', '=', $id)->where('expire', '>', time())->fetch()) {
+		// run garbage collection
+		if(mt_rand(0, 1000) > 900) {
+			Query::table($table)->where('expire', '<', time())->delete();
+		}
+
+		// find session
+		$query = Query::table($table)->where('id', '=', $id)->where('expire', '>', time());
+
+		if($result = $query->fetch(array('data'))) {
 			$this->exists = true;
 
-			return unserialize($result->data);
+			if($data = @unserialize($result->data)) {
+				return $data;
+			}
 		}
 	}
 
@@ -34,15 +44,10 @@ class Database extends Driver {
 		$data = serialize($cargo);
 
 		if($this->exists) {
-			Query::table($table)->where('id', '=', $id)->update(array(
-				'expire' => $expire,
-				'data' => $data));
+			Query::table($table)->where('id', '=', $id)->update(array('expire' => $expire, 'data' => $data));
 		}
 		else {
-			Query::table($table)->insert(array(
-				'id' => $id,
-				'expire' => $expire,
-				'data' => $data));
+			Query::table($table)->insert(array('id' => $id, 'expire' => $expire, 'data' => $data));
 		}
 	}
 

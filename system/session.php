@@ -43,19 +43,38 @@ class Session {
 	}
 
 	/**
+	 * Returns the curren instance of the cargo object
+	 *
+	 * @return object Cargo
+	 */
+	public static function instance() {
+		if(is_null(static::$cargo)) {
+			$driver = static::factory(Config::session());
+
+			static::$cargo = new Cargo($driver, Config::app('key'));
+		}
+
+		return static::$cargo;
+	}
+
+	/**
 	 * Read the current session using the driver set in the config file
 	 */
 	public static function read() {
-		if(is_null(static::$cargo)) static::$cargo = new Cargo(static::factory(Config::session()));
+		if(is_null(static::$cargo)) {
+			$driver = static::factory(Config::session());
 
-		static::$cargo->read();
+			static::$cargo = new Cargo($driver, Config::app('key'));
+		}
+
+		static::instance()->read();
 	}
 
 	/**
 	 * Write the current session using the driver set in the config file
 	 */
 	public static function write() {
-		static::$cargo->write();
+		static::instance()->write();
 	}
 
 	/**
@@ -65,8 +84,10 @@ class Session {
 	 * @param array
 	 */
 	public static function __callStatic($method, $arguments) {
-		if(method_exists(static::$cargo, $method)) {
-			return call_user_func_array(array(static::$cargo, $method), $arguments);
+		$cargo = static::instance();
+
+		if(method_exists($cargo, $method)) {
+			return call_user_func_array(array($cargo, $method), $arguments);
 		}
 
 		throw new ErrorException('Unknown session method');

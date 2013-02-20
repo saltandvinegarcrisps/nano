@@ -10,6 +10,8 @@
  * @copyright	http://unlicense.org/
  */
 
+use InvalidArgumentException;
+
 class Route {
 
 	/**
@@ -47,9 +49,17 @@ class Route {
 	 * @param array
 	 */
 	public static function register($method, $patterns, $args) {
-		if( ! is_array($patterns)) $patterns = array($patterns);
+		if( ! is_array($patterns)) {
+			$patterns = array($patterns);
+		}
 
-		if(is_callable($args)) $args = array('main' => $args);
+		if(is_callable($args)) {
+			$args = array('main' => $args);
+		}
+
+		if( ! isset($args['main'])) {
+			throw new InvalidArgumentException('No `main` index was passed');
+		}
 
 		foreach($patterns as $pattern) {
 			Router::$routes[strtoupper($method)][$pattern] = $args;
@@ -121,8 +131,14 @@ class Route {
 
 		$this->after($response);
 
+		// Create a response from a View
 		if($response instanceof View) {
-			return Response::create($response->yield());
+			$response = Response::create($response->yield());
+		}
+
+		// Create a response from a String
+		if(is_string($response)) {
+			$response = Response::create($response);
 		}
 
 		return $response;

@@ -3,24 +3,55 @@
 class UriTest extends PHPUnit_Framework_TestCase {
 
 	public function testCurrent()  {
-		Config::set('app.url', '/myapp/public/');
+		// uri: http://domain.app/home/index.php/help
+		// path: /home/user/domain.app/public/home/index.php
+
+		$_SERVER['SCRIPT_NAME'] = '/home/index.php';
+		$_SERVER['REQUEST_URI'] = '/home/index.php';
+		$_SERVER['PATH_INFO'] = '/help';
+
+		Config::set('app.url', dirname($_SERVER['SCRIPT_NAME']));
 		Config::set('app.index', 'index.php');
 
-		$_SERVER['PATH_INFO'] = '/myapp/public/index.php/home';
+		$this->assertEquals(Uri::current(), 'help');
 
-		$this->assertEquals(Uri::current(), 'home');
+		// uri: http://domain.app/home/help
+		// path: /home/user/domain.app/public/home/index.php
 
-		$_SERVER['PATH_INFO'] = '/myapp/public/index.php';
+		$_SERVER['SCRIPT_NAME'] = '/home/index.php';
+		$_SERVER['REQUEST_URI'] = '/home/help';
+		$_SERVER['PATH_INFO'] = '/home/help';
 
-		$this->assertEquals(Uri::current(), 'home');
+		Config::set('app.url', dirname($_SERVER['SCRIPT_NAME']));
+		Config::set('app.index', '');
 
-		$_SERVER['PATH_INFO'] = '/myapp/public/';
+		$this->assertEquals(Uri::current(), 'help');
+	}
 
-		$this->assertEquals(Uri::current(), 'home');
+	public function testTo()  {
+		// uri: http://domain.app/home/index.php/help
+		// path: /home/user/domain.app/public/home/index.php
 
-		$_SERVER['PATH_INFO'] = '/myapp/public';
+		$_SERVER['SCRIPT_NAME'] = '/home/index.php';
+		$_SERVER['REQUEST_URI'] = '/home/index.php';
+		$_SERVER['PATH_INFO'] = '/help';
 
-		$this->assertEquals(Uri::current(), 'home');
+		Config::set('app.url', dirname($_SERVER['SCRIPT_NAME']));
+		Config::set('app.index', 'index.php');
+
+		$this->assertEquals(Uri::to('help'), '/home/index.php/help');
+
+		// uri: http://domain.app/home/help
+		// path: /home/user/domain.app/public/home/index.php
+
+		$_SERVER['SCRIPT_NAME'] = '/home/index.php';
+		$_SERVER['REQUEST_URI'] = '/home/help';
+		$_SERVER['PATH_INFO'] = '/help';
+
+		Config::set('app.url', dirname($_SERVER['SCRIPT_NAME']));
+		Config::set('app.index', '');
+
+		$this->assertEquals(Uri::to('help'), '/home/help');
 	}
 
 }

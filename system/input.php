@@ -45,13 +45,23 @@ class Input {
 	}
 
 	/**
-	 * Get a element from the input array
+	 * Get a element or array of elements from the input array
 	 *
-	 * @param string
+	 * @param string|array
 	 * @param mixed
 	 * @return mixed
 	 */
 	public static function get($key, $fallback = null) {
+		if(is_array($key)) {
+			$values = array();
+
+			foreach($key as $k) {
+				$values[$k] = static::get($k, $fallback);
+			}
+
+			return $values;
+		}
+
 		return Arr::get(static::$array, $key, $fallback);
 	}
 

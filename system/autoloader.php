@@ -34,7 +34,9 @@ class Autoloader {
 	public static function directory($paths) {
 		if( ! is_array($paths)) $paths = array($paths);
 
-		foreach($paths as $path) static::$directories[] = rtrim($path, DS) . DS;
+		foreach($paths as $path) {
+			static::$directories[] = rtrim($path, DS) . DS;
+		}
 	}
 
 	/**

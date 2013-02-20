@@ -55,7 +55,7 @@ class Response {
 	 * @return object
 	 */
 	public static function redirect($uri, $status = 302) {
-		return static::create('', $status)->header('Location', $uri);
+		return static::create('', $status, array('Location' => Uri::to($uri)));
 	}
 
 	/**
@@ -94,7 +94,7 @@ class Response {
 
 		// always make sure we send the content type
 		if( ! array_key_exists('content-type', $this->headers)) {
-			$this->headers['content-type'] = 'text/html; charset=' . Config::app('encoding');
+			$this->headers['content-type'] = 'text/html; charset=' . Config::app('encoding', 'UTF-8');
 		}
 
 		// output headers

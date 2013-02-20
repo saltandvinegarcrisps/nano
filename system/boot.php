@@ -51,6 +51,7 @@ if(get_magic_quotes_gpc()) {
  */
 require PATH . 'system/helpers' . EXT;
 require PATH . 'system/error' . EXT;
+require PATH . 'system/arr' . EXT;
 require PATH . 'system/config' . EXT;
 require PATH . 'system/autoloader' . EXT;
 
@@ -64,7 +65,7 @@ System\Autoloader::directory(PATH);
 
 // map application aliases to autoloader so we dont
 // have to fully specify the class namespaces each time.
-System\Autoloader::$aliases = System\Config::app('aliases');
+System\Autoloader::$aliases = System\Config::aliases();
 
 /**
  * Error handling

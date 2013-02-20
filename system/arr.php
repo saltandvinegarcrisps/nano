@@ -47,13 +47,13 @@ class Arr {
 		while(count($keys) > 1) {
 			$key = array_shift($keys);
 
-			if(array_key_exists($key, $array)) {
-				$array =& $array[$key];
+			// make sure we have a array to set our new key in
+			if( ! array_key_exists($key, $array)) {
+				$array[$key] = array();
 			}
-		}
 
-		// make sure we have a array to set our new key
-		if( ! is_array($array)) $array = array();
+			$array =& $array[$key];
+		}
 
 		$array[array_shift($keys)] = $value;
 	}
@@ -64,7 +64,7 @@ class Arr {
 	 * @param array
 	 * @param string
 	 */
-	public static function dismiss(&$array, $key) {
+	public static function erase(&$array, $key) {
 		$keys = explode('.', $key);
 
 		// traverse the array into the second last key

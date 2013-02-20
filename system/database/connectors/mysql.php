@@ -16,6 +16,13 @@ use System\Database\Connector;
 class Mysql extends Connector {
 
 	/**
+	 * Holds the php pdo instance
+	 *
+	 * @var object
+	 */
+	private $pdo;
+
+	/**
 	 * The mysql left wrapper
 	 *
 	 * @var string
