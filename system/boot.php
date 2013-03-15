@@ -58,14 +58,14 @@ require PATH . 'system/autoloader' . EXT;
 /**
  * Register the autoloader
  */
-spl_autoload_register('System\\Autoloader::load');
+spl_autoload_register(array('System\\Autoloader', 'load'));
 
 // set the base path to search
 System\Autoloader::directory(PATH);
 
 // map application aliases to autoloader so we dont
 // have to fully specify the class namespaces each time.
-System\Autoloader::$aliases = System\Config::aliases();
+System\Autoloader::$aliases = (array) System\Config::aliases();
 
 /**
  * Error handling

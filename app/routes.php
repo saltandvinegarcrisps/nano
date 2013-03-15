@@ -3,7 +3,7 @@
 /*
  * Home page
  */
-Route::get(array('/', 'home'), function() {
+Route::get('/', function() {
 	$words = array('Welcome', 'Bienvenue', 'Willkommen', 'Selamat datang', 'Bienvenido');
 	$vars['welcome'] = Arr::create($words)->shuffle()->first();
 

@@ -119,42 +119,6 @@ class Query extends Builder {
 	}
 
 	/**
-	 * Wrap database tables and columns names
-	 *
-	 * @param string|array
-	 * @return string
-	 */
-	public function wrap($column) {
-		if(is_array($column)) {
-			$columns = array();
-
-			foreach($column as $c) {
-				$columns[] = $this->wrap($c);
-			}
-
-			return implode(', ', $columns);
-		}
-
-		return $this->enclose($column);
-	}
-
-	/**
-	 * Enclose value with database connector escape characters
-	 *
-	 * @param string
-	 * @return string
-	 */
-	public function enclose($value) {
-		$params = array();
-
-		foreach(explode('.', $value) as $item) {
-			$params[] = $this->connection->lwrap . $item . $this->connection->rwrap;
-		}
-
-		return implode('.', $params);
-	}
-
-	/**
 	 * Set the class name for fetch queries, return self for chaining
 	 *
 	 * @param string
@@ -296,9 +260,25 @@ class Query extends Builder {
 	}
 
 	/**
-	 * Add a table join to the query
+	 * Add a where clause to the query starting with IN
 	 *
 	 * @param string
+	 * @param array
+	 * @return object
+	 */
+	public function where_in($column, $values) {
+		$this->where[] = (count($this->where) ? 'OR ' : 'WHERE ') .
+			$this->wrap($column) . ' IN (' . $this->placeholders(count($values)) . ')';
+
+		$this->bind = array_merge($this->bind, $values);
+
+		return $this;
+	}
+
+	/**
+	 * Add a table join to the query
+	 *
+	 * @param string|function
 	 * @param string
 	 * @param string
 	 * @param string
@@ -306,8 +286,16 @@ class Query extends Builder {
 	 * @return object
 	 */
 	public function join($table, $left, $operator, $right, $type = 'INNER') {
-		$this->join[] = $type . ' JOIN ' . $this->wrap($table) .
-			' ON (' . $this->wrap($left) . ' ' . $operator . ' ' . $this->wrap($right) . ')';
+		if(is_callable($table)) {
+			list($query, $alias) = $table();
+
+			$this->bind = array_merge($this->bind, $query->bind);
+
+			$table = '(' . $query->build_select() . ') AS ' . $this->wrap($alias);
+		}
+		else $table = $this->wrap($table);
+
+		$this->join[] = $type . ' JOIN ' . $table . ' ON (' . $this->wrap($left) . ' ' . $operator . ' ' . $this->wrap($right) . ')';
 
 		return $this;
 	}

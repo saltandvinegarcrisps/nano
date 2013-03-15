@@ -27,7 +27,7 @@ class Error {
 
 		if(Config::error('report')) {
 			// clear output buffer
-			ob_get_level() and ob_end_clean();
+			while(ob_get_level() > 1) ob_end_clean();
 
 			echo '<html>
 				<head>
@@ -49,7 +49,7 @@ class Error {
 		}
 		else {
 			// issue a 500 response
-			Response::error(500)->send();
+			Response::error(500, array('exception' => $e))->send();
 		}
 
 		exit(1);

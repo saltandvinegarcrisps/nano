@@ -3,6 +3,8 @@
 return array(
 	'default' => 'sqlite',
 
+	'profiling' => true,
+
 	'connections' => array(
 		'sqlite' => array(
 			'driver' => 'sqlite',

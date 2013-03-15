@@ -5,7 +5,7 @@ return array(
 	'Autoloader' => 'System\\Autoloader',
 	'Config' => 'System\\Config',
 	'Cookie' => 'System\\Cookie',
-	'Database' => 'System\\Database',
+	'DB' => 'System\\Database',
 	'Error' => 'System\\Error',
 	'Input' => 'System\\Input',
 	'Query' => 'System\\Database\\Query',

@@ -18,8 +18,12 @@ class Cookie extends Driver {
 	public function read($id) {
 		extract($this->config);
 
-		if($data = C::read($cookie . '_payload')) {
-			return unserialize(base64_decode($data));
+		// check if the cookie exists
+		if($encoded = C::read($cookie . '_payload')) {
+			// can we decode and unserialize it
+			if($data = @unserialize(base64_decode($encoded))) {
+				return $data;
+			}
 		}
 	}
 

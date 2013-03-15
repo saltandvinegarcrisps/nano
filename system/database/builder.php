@@ -13,6 +13,63 @@
 class Builder {
 
 	/**
+	 * Wrap database tables and columns names
+	 *
+	 * @param string|array
+	 * @return string
+	 */
+	public function wrap($column) {
+		if(is_array($column)) {
+			$columns = array();
+
+			foreach($column as $c) {
+				$columns[] = $this->wrap($c);
+			}
+
+			return implode(', ', $columns);
+		}
+
+		return $this->enclose($column);
+	}
+
+	/**
+	 * Enclose value with database connector escape characters
+	 *
+	 * @param string
+	 * @return string
+	 */
+	public function enclose($value) {
+		$params = array();
+
+		foreach(explode('.', $value) as $item) {
+			if($item == '*') {
+				$params[] = $item;
+			}
+			else {
+				$params[] = $this->connection->lwrap . $item . $this->connection->rwrap;
+			}
+		}
+
+		return implode('.', $params);
+	}
+
+	/**
+	 * Build placeholders to replace with values in a query
+	 *
+	 * @param int
+	 * @return string
+	 */
+	public function placeholders($length, $holder = '?') {
+		$holders = array();
+
+		for($i = 0; $i < $length; $i++) {
+			$holders[] = $holder;
+		}
+
+		return implode(', ', $holders);
+	}
+
+	/**
 	 * Set a row offset on the query
 	 *
 	 * @param int
@@ -56,13 +113,8 @@ class Builder {
 	 */
 	public function build_insert($row) {
 		$keys = array_keys($row);
+		$values = $this->placeholders(count($row));
 		$this->bind = array_values($row);
-
-		$values = call_user_func(function() use($row) {
-			$placeholders = array();
-			for($i = 0; $i < count($row); $i++) $placeholders[] = '?';
-			return implode(', ', $placeholders);
-		});
 
 		return 'INSERT INTO ' . $this->wrap($this->table) . ' (' . $this->wrap($keys) . ') VALUES(' . $values . ')';
 	}
@@ -121,6 +173,5 @@ class Builder {
 	public function build_select_count() {
 		return 'SELECT COUNT(*) FROM ' . $this->wrap($this->table) . $this->build();
 	}
-
 
 }

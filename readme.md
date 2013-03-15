@@ -1,6 +1,6 @@
 ## Nano
 
-Nano size PHP 5.3+ framework
+Nano size PHP 5.3.6+ framework
 
 ### Features
 

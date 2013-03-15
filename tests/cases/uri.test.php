@@ -2,56 +2,77 @@
 
 class UriTest extends PHPUnit_Framework_TestCase {
 
-	public function testCurrent()  {
-		// uri: http://domain.app/home/index.php/help
-		// path: /home/user/domain.app/public/home/index.php
+	public function testCurrentUsingPathinfo()  {
+		$_SERVER = array(
+			'SCRIPT_NAME' => '/app/index.php',
+			'PATH_INFO' => '/help'
+		);
 
-		$_SERVER['SCRIPT_NAME'] = '/home/index.php';
-		$_SERVER['REQUEST_URI'] = '/home/index.php';
-		$_SERVER['PATH_INFO'] = '/help';
-
-		Config::set('app.url', dirname($_SERVER['SCRIPT_NAME']));
+		Config::set('app.url', '/app');
 		Config::set('app.index', 'index.php');
-
-		$this->assertEquals(Uri::current(), 'help');
-
-		// uri: http://domain.app/home/help
-		// path: /home/user/domain.app/public/home/index.php
-
-		$_SERVER['SCRIPT_NAME'] = '/home/index.php';
-		$_SERVER['REQUEST_URI'] = '/home/help';
-		$_SERVER['PATH_INFO'] = '/home/help';
-
-		Config::set('app.url', dirname($_SERVER['SCRIPT_NAME']));
-		Config::set('app.index', '');
+		Uri::$current = null;
 
 		$this->assertEquals(Uri::current(), 'help');
 	}
 
-	public function testTo()  {
-		// uri: http://domain.app/home/index.php/help
-		// path: /home/user/domain.app/public/home/index.php
+	public function testCurrentUsingPathinfoStralingSlash()  {
+		$_SERVER = array(
+			'SCRIPT_NAME' => '/app/index.php',
+			'PATH_INFO' => '/help/'
+		);
 
-		$_SERVER['SCRIPT_NAME'] = '/home/index.php';
-		$_SERVER['REQUEST_URI'] = '/home/index.php';
-		$_SERVER['PATH_INFO'] = '/help';
+		Config::set('app.url', '/app');
+		Config::set('app.index', 'index.php');
+		Uri::$current = null;
 
-		Config::set('app.url', dirname($_SERVER['SCRIPT_NAME']));
+		$this->assertEquals(Uri::current(), 'help');
+	}
+
+	public function testCurrentUsingRequestUri()  {
+		$_SERVER = array(
+			'SCRIPT_NAME' => '/app/index.php',
+			'REQUEST_URI' => '/app',
+		);
+
+		Config::set('app.url', '/app');
+		Config::set('app.index', 'index.php');
+		Uri::$current = null;
+
+		$this->assertEquals(Uri::current(), '/');
+	}
+
+	public function testCurrentUsingRequestUriStralingSlash()  {
+		$_SERVER = array(
+			'SCRIPT_NAME' => '/app/index.php',
+			'REQUEST_URI' => '/app/',
+		);
+
+		Config::set('app.url', '/app');
+		Config::set('app.index', 'index.php');
+		Uri::$current = null;
+
+		$this->assertEquals(Uri::current(), '/');
+	}
+
+	public function testToWithUrlIndex()  {
+		Config::set('app.url', '/app');
 		Config::set('app.index', 'index.php');
 
-		$this->assertEquals(Uri::to('help'), '/home/index.php/help');
+		$this->assertEquals(Uri::to('help'), '/app/index.php/help');
+	}
 
-		// uri: http://domain.app/home/help
-		// path: /home/user/domain.app/public/home/index.php
-
-		$_SERVER['SCRIPT_NAME'] = '/home/index.php';
-		$_SERVER['REQUEST_URI'] = '/home/help';
-		$_SERVER['PATH_INFO'] = '/help';
-
-		Config::set('app.url', dirname($_SERVER['SCRIPT_NAME']));
+	public function testToWithNoIndex()  {
+		Config::set('app.url', '/app');
 		Config::set('app.index', '');
 
-		$this->assertEquals(Uri::to('help'), '/home/help');
+		$this->assertEquals(Uri::to('help'), '/app/help');
+	}
+
+	public function testToWithNone()  {
+		Config::set('app.url', '');
+		Config::set('app.index', '');
+
+		$this->assertEquals(Uri::to('help'), '/help');
 	}
 
 }

@@ -44,7 +44,7 @@ class Response {
 	 * @return object
 	 */
 	public static function create($output, $status = 200, $headers = array()) {
-		return new static($output, $status = 200, $headers);
+		return new static($output, $status, $headers);
 	}
 
 	/**
@@ -55,6 +55,10 @@ class Response {
 	 * @return object
 	 */
 	public static function redirect($uri, $status = 302) {
+		// Scrub all output buffer before we redirect.
+		// @see http://www.mombu.com/php/php/t-output-buffering-and-zlib-compression-issue-3554315-last.html
+		while(ob_get_level() > 1) ob_end_clean();
+
 		return static::create('', $status, array('Location' => Uri::to($uri)));
 	}
 
@@ -65,8 +69,20 @@ class Response {
 	 * @param int
 	 * @return object
 	 */
-	public static function error($status) {
-		return static::create(View::create('error/' . $status)->yield(), $status);
+	public static function error($status, $vars = array()) {
+		return static::create(View::create('error/' . $status, $vars)->yield(), $status);
+	}
+
+	/**
+	 * Creates a response with the output as JSON
+	 *
+	 * @param string
+	 * @param int
+	 * @return object
+	 */
+	public static function json($output, $status = 200) {
+		return static::create(json_encode($output), $status,
+			array('content-type' => 'application/json; charset=' . Config::app('encoding', 'UTF-8')));
 	}
 
 	/**

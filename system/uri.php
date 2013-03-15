@@ -29,6 +29,8 @@ class Uri {
 	 * @return string
 	 */
 	public static function to($uri) {
+		if(strpos($uri, '://')) return $uri;
+
 		$base = Config::app('url', '');
 
 		if($index = Config::app('index', '')) {
@@ -36,6 +38,20 @@ class Uri {
 		}
 
 		return rtrim($base, '/') . '/' . $index . ltrim($uri, '/');
+	}
+
+	/**
+	 * Get full uri relative to the application
+	 *
+	 * @param string
+	 * @return string
+	 */
+	public static function full($uri) {
+		if(strpos($uri, '://')) return $uri;
+
+		$scheme = empty($_SERVER['HTTPS']) ? 'http://' : 'https://';
+
+		return $scheme . $_SERVER['HTTP_HOST'] . static::to($uri);
 	}
 
 	/**
@@ -55,10 +71,10 @@ class Uri {
 	 * @return string
 	 */
 	public static function detect() {
-		$try = array('PATH_INFO', 'REQUEST_URI');
+		$try = array('PATH_INFO', 'ORIG_PATH_INFO', 'REQUEST_URI');
 
 		foreach($try as $method) {
-			if($uri = Arr::get($_SERVER, $method)) {
+			if($uri = filter_input(INPUT_SERVER, $method, FILTER_SANITIZE_URL)) {
 				// make sure the uri is not malformed
 				if($uri = parse_url($uri, PHP_URL_PATH)) {
 					return static::format($uri);
@@ -104,7 +120,6 @@ class Uri {
 	public static function remove($value, $uri) {
 		// make sure our search value is a non-empty string
 		if(is_string($value) and strlen($value)) {
-
 			// if the search value is at the start sub it out
 			if(strpos($uri, $value) === 0) {
 				$uri = substr($uri, strlen($value));
@@ -131,13 +146,17 @@ class Uri {
 	 * @return string
 	 */
 	public static function remove_relative_uri($uri) {
-		$base = Config::app('url');
-
-		if($index = Config::app('index')) {
-			$index .= '/';
+		// remove base url
+		if($base = Config::app('url')) {
+			$uri = static::remove(rtrim($base, '/'), $uri);
 		}
 
-		return static::remove($base . $index, $uri);
+		// remove index
+		if($index = Config::app('index')) {
+			$uri = static::remove('/' . $index, $uri);
+		}
+
+		return $uri;
 	}
 
 }

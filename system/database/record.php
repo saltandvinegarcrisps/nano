@@ -1,5 +1,7 @@
 <?php namespace System\Database;
 
+use System\Database\Query;
+
 /**
  * Nano
  *
@@ -13,11 +15,25 @@
 abstract class Record {
 
 	/**
+	 * Save found objects for faster lookups
+	 *
+	 * @var array
+	 */
+	protected static $cache = array();
+
+	/**
 	 * Holds the current record data
 	 *
 	 * @var array
 	 */
 	public $data = array();
+
+	/**
+	 * The database table name prefix
+	 *
+	 * @var string
+	 */
+	public static $prefix;
 
 	/**
 	 * The database table
@@ -40,7 +56,12 @@ abstract class Record {
 	 * @return object Record
 	 */
 	public static function find($id) {
-		return static::where(static::$primary, '=', $id)->apply(get_called_class())->fetch();
+		$class = get_called_class();
+		$key = $class . $id;
+
+		if(isset(static::$cache[$key])) return static::$cache[$key];
+
+		return (static::$cache[$key] = static::where(static::$primary, '=', $id)->apply($class)->fetch());
 	}
 
 	/**
@@ -90,7 +111,9 @@ abstract class Record {
 	 * @return mixed
 	 */
 	public function __get($key) {
-		return $this->data[$key];
+		if(array_key_exists($key, $this->data)) {
+			return $this->data[$key];
+		}
 	}
 
 	/**
@@ -132,7 +155,7 @@ abstract class Record {
 	 * @return mixed
 	 */
 	public static function __callStatic($method, $arguments) {
-		$obj = Query::table(static::$table)->apply(get_called_class());
+		$obj = Query::table(static::$prefix . static::$table)->apply(get_called_class());
 
 		if(method_exists($obj, $method)) {
 			return call_user_func_array(array($obj, $method), $arguments);

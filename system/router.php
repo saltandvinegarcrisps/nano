@@ -12,6 +12,7 @@
 
 use FilesystemIterator;
 use ErrorException;
+use InvalidArgumentException;
 
 class Router {
 
@@ -21,6 +22,13 @@ class Router {
 	 * @var str
 	 */
 	public $uri;
+
+	/**
+	 * The current request method
+	 *
+	 * @var str
+	 */
+	public $method;
 
 	/**
 	 * Array of regex patterns to subsitute
@@ -53,80 +61,81 @@ class Router {
 	 *
 	 * @return object
 	 */
-	public static function create($uri) {
-		return new static($uri);
+	public static function create($method, $uri) {
+		return new static($method, $uri);
+	}
+
+	/**
+	 * Try and match uri with filesystem so we only include
+	 * files relative to our uri and not everything
+	 *
+	 * @param string
+	 */
+	public static function import($uri) {
+		$path = APP . 'routes';
+
+		// try routes.php file
+		if(is_readable($routes = $path . EXT)) {
+			require $routes;
+		}
+
+		// try direct match with uri
+		if(is_file($file = $path . DS . $uri . EXT)) {
+			require $file;
+		}
+
+		// try matching a folder
+		$segments = array_diff(explode('/', $uri), array(''));
+
+		while(count($segments)) {
+			// if we have a same name file import it
+			if(is_readable($file = $path . DS . $segments[0] . EXT)) {
+				require $file;
+			}
+
+			// step into dir shift one from the array
+			$path .= DS . array_shift($segments);
+		}
 	}
 
 	/**
 	 * Create a new instance of the Router class and import
 	 * app routes from a folder or a single routes.php file
+	 *
+	 * @param string
+	 * @param string
 	 */
-	public function __construct($uri) {
-		// the current uri
+	public function __construct($method, $uri) {
 		$this->uri = $uri;
-
-		// read all files and nested files
-		if(is_dir($path = APP . 'routes')) {
-			$this->read($path);
-		}
-
-		// read single file
-		if(is_readable($path = APP . 'routes' . EXT)) {
-			require $path;
-		}
+		$this->method = strtoupper($method);
 	}
 
 	/**
-	 * Read app routes from a directory recursively
+	 * Gets array of request method routes
 	 *
-	 * @param string
+	 * @return array
 	 */
-	public function read($path) {
-		// try and match uri with filesystem so we only include
-		// files relative to our uri and not everything
-		foreach(explode($this->uri, '/') as $segment) {
-			if(is_dir($dir = $path . DS . $segment)) {
-				$this->import($dir);
-			}
+	public function routes() {
+		$routes = array();
 
-			if(file_exists($file = $path . DS . $segment . EXT)) {
-				require $file;
-			}
-
-			$path .= DS . $segment;
+		if(array_key_exists($this->method, static::$routes)) {
+			$routes = array_merge($routes, static::$routes[$this->method]);
 		}
-	}
 
-	/**
-	 * Import app routes from a directory recursively
-	 *
-	 * @param string
-	 */
-	public function import($path) {
-		$iterator = new FilesystemIterator($path, FilesystemIterator::SKIP_DOTS);
-
-		foreach($iterator as $fileinfo) {
-			if($fileinfo->getExtension() == 'php') {
-				require $fileinfo->getPathname();
-			}
-			else if($fileinfo->isDir()) {
-				$this->import($fileinfo->getPathname());
-			}
+		if(array_key_exists('ANY', static::$routes)) {
+			$routes = array_merge($routes, static::$routes['ANY']);
 		}
+
+		return $routes;
 	}
 
 	/**
 	 * Try and match the request method and uri with defined routes
 	 *
-	 * @param string The request method
-	 * @param string The current uri
 	 * @return object Return a instance of a Route
 	 */
-	public function match($method) {
-		$routes = array_merge(
-			Arr::get(static::$routes, $method, array()),
-			Arr::get(static::$routes, 'ANY', array())
-		);
+	public function match() {
+		$routes = $this->routes();
 
 		// try a simple match
 		if(array_key_exists($this->uri, $routes)) {
@@ -134,18 +143,33 @@ class Router {
 		}
 
 		// search for patterns
+		$searches = array_keys(static::$patterns);
+		$replaces = array_values(static::$patterns);
+
 		foreach($routes as $pattern => $action) {
 			// replace wildcards
 			if(strpos($pattern, ':') !== false) {
-				$pattern = str_replace(array_keys(static::$patterns), array_values(static::$patterns), $pattern);
+				$pattern = str_replace($searches, $replaces, $pattern);
 			}
 
+			// slice array of matches. $matches[0] will contain the text that
+			// matched the full pattern, $matches[1] will have the text that
+			// matched the first captured parenthesized subpattern, and so on.
 			if(preg_match('#^' . $pattern . '$#', $this->uri, $matched)) {
 				return new Route($action, array_slice($matched, 1));
 			}
 		}
 
 		throw new ErrorException('No routes matched');
+	}
+
+	/**
+	 * Match the request with a route and run it
+	 *
+	 * @return object Response instance
+	 */
+	public function dispatch() {
+		return $this->match()->run();
 	}
 
 }
