@@ -49,17 +49,26 @@ class Input {
 	 * @return mixed
 	 */
 	public static function get($key, $fallback = null) {
-		if(is_array($key)) {
-			$values = array();
-
-			foreach($key as $k) {
-				$values[$k] = static::get($k, $fallback);
-			}
-
-			return $values;
-		}
+		if(is_array($key)) return static::get_array($key, $fallback);
 
 		return Arr::get(static::$array, $key, $fallback);
+	}
+
+	/**
+	 * Get a array of elements from the input array
+	 *
+	 * @param array
+	 * @param mixed
+	 * @return array
+	 */
+	public static function get_array($array, $fallback = null) {
+		$values = array();
+
+		foreach($array as $key) {
+			$values[$key] = static::get($key, $fallback);
+		}
+
+		return $values;
 	}
 
 	/**

@@ -4,15 +4,15 @@
  * Home page
  */
 Route::get('/', function() {
-	$words = array('Welcome', 'Bienvenue', 'Willkommen', 'Selamat datang', 'Bienvenido');
+	$words = array('Welcome', 'Bienvenue', 'Willkommen', 'Bienvenido');
 	$vars['welcome'] = Arr::create($words)->shuffle()->first();
 
 	return View::home($vars);
 });
 
 /*
- * 404 catch all
+ * 404 error
  */
-Route::any(':all', function() {
+Route::error('404', function() {
 	return Response::error(404);
 });

@@ -72,6 +72,16 @@ class Route {
 	}
 
 	/**
+	 * Start a collection of routes with common actions
+	 *
+	 * @param string
+	 * @param string|closure
+	 */
+	public static function collection($actions, $definitions) {
+		//
+	}
+
+	/**
 	 * Create a new instance of the Route class
 	 *
 	 * @param array
@@ -104,7 +114,7 @@ class Route {
 	 * @param string
 	 */
 	public function after($response) {
-		if( ! isset($this->actions['after'])) return;
+		if( ! isset($this->callbacks['after'])) return;
 
 		foreach(explode(',', $this->callbacks['after']) as $action) {
 			call_user_func(Router::$actions[$action], $response);
@@ -130,12 +140,12 @@ class Route {
 
 		// If the response was a view get the output and create response
 		if($response instanceof View) {
-			$response = Response::create($response->yield());
+			return Response::create($response->yield());
 		}
 
 		// If the output was a string create response
 		if(is_string($response)) {
-			$response = Response::create($response);
+			return Response::create($response);
 		}
 
 		return $response;

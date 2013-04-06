@@ -1,0 +1,24 @@
+body {
+	font: 15px/25px "Open Sans", "Helvetica Neue", "DejaVu Sans", "Arial", sans-serif;
+
+	background: #FFF;
+	color: #333;
+
+	width: 600px;
+	margin: 30px auto;
+}
+
+a, a:visited {
+	color: #4DBCE9;
+}
+
+a:hover, a:active {
+	color: #26ADE4;
+}
+
+code {
+	background: #D1E751;
+	padding: 6px 10px;
+	border-radius: 4px;
+	font-size: 14px;
+}

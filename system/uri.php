@@ -46,12 +46,27 @@ class Uri {
 	 * @param string
 	 * @return string
 	 */
-	public static function full($uri) {
+	public static function full($uri, $secure = null) {
 		if(strpos($uri, '://')) return $uri;
 
-		$scheme = empty($_SERVER['HTTPS']) ? 'http://' : 'https://';
+		if( ! is_null($secure)) {
+			$scheme = $secure ? 'https://' : 'http://';
+		}
+		else {
+			$scheme = empty($_SERVER['HTTPS']) ? 'http://' : 'https://';
+		}
 
 		return $scheme . $_SERVER['HTTP_HOST'] . static::to($uri);
+	}
+
+	/**
+	 * Get full secure uri relative to the application
+	 *
+	 * @param string
+	 * @return string
+	 */
+	public static function secure($uri) {
+		return static::full($uri, true);
 	}
 
 	/**
@@ -74,8 +89,10 @@ class Uri {
 		$try = array('PATH_INFO', 'ORIG_PATH_INFO', 'REQUEST_URI');
 
 		foreach($try as $method) {
-			if($uri = filter_input(INPUT_SERVER, $method, FILTER_SANITIZE_URL)) {
-				// make sure the uri is not malformed
+			if( ! array_key_exists($method, $_SERVER)) continue;
+
+			if($uri = filter_var($_SERVER[$method], FILTER_SANITIZE_URL)) {
+				// make sure the uri is not malformed and return the pathname
 				if($uri = parse_url($uri, PHP_URL_PATH)) {
 					return static::format($uri);
 				}

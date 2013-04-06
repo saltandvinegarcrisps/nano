@@ -1,21 +1,33 @@
 <?php
 
 return array(
-	// Application URL
+	/*
+	 * Application base URL
+	 */
 	'url' => '',
 
-	// Application Index
+	/*
+	 * Application Index
+	 */
 	'index' => 'index.php',
 
-	// Application Timezone
-	'timezone' => 'Europe/London',
+	/*
+	 * Application Timezone
+	 */
+	'timezone' => 'UTC',
 
-	// Application Key
+	/*
+	 * Application Key
+	 */
 	'key' => hash('md5', 'Change me!'),
 
-	// Default Application Language
+	/*
+	 * Application Language
+	 */
 	'language' => 'en_GB',
 
-	// Application Character Encoding
+	/*
+	 * Application Character Encoding
+	 */
 	'encoding' => 'UTF-8'
 );

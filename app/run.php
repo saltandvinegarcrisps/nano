@@ -15,10 +15,12 @@ date_default_timezone_set(Config::app('timezone', 'UTC'));
  */
 switch(constant('ENV')) {
 	case 'dev':
+		ini_set('display_error', true);
 		error_reporting(-1);
 		break;
 
 	default:
+		ini_set('display_error', false);
 		error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
 }
 
@@ -29,3 +31,13 @@ Autoloader::directory(array(
 	APP . 'models',
 	APP . 'libraries'
 ));
+
+/**
+ * Register composer autoloader
+ */
+require PATH . 'vendor/autoload' . EXT;
+
+/**
+ * Import defined routes
+ */
+require APP . 'routes' . EXT;

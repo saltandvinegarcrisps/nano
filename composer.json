@@ -1,0 +1,12 @@
+{
+	"name": "rwarasaurus/nano",
+	"authors": [
+		{
+			"name": "Kieron",
+			"email": "rwarasaurus@gmail.com"
+		}
+	],
+	"require": {
+		"php": ">=5.3.6"
+	}
+}

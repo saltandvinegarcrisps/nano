@@ -7,14 +7,11 @@
 		<meta name="author" content="">
 		<meta name="description" content="">
 		<meta name="viewport" content="width=device-width">
-		<meta name="processing-time" content="<?php echo round(microtime(true) - START_TIME, 4); ?>ms">
 
 		<!--[if lt IE 9]>
 		<script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
 		<![endif]-->
 
-		<link rel="stylesheet" href="<?php echo asset('assets/css/normalize.css'); ?>" type="text/css">
-		<link rel="stylesheet" href="<?php echo asset('assets/css/grid.css'); ?>" type="text/css">
 		<link rel="stylesheet" href="<?php echo asset('assets/css/style.css'); ?>" type="text/css">
 	</head>
 	<body>
