@@ -7,10 +7,6 @@ Route::get(array('/', 'home'), function() {
 	$words = array('Welcome', 'Bienvenue', 'Willkommen', 'Bienvenido');
 	$vars['welcome'] = Arr::create($words)->shuffle()->first();
 
-	function test($fail) {}
-
-	test();
-
 	return View::home($vars);
 });
 
