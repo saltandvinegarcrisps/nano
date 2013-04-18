@@ -7,12 +7,17 @@ Route::get(array('/', 'home'), function() {
 	$words = array('Welcome', 'Bienvenue', 'Willkommen', 'Bienvenido');
 	$vars['welcome'] = Arr::create($words)->shuffle()->first();
 
+	function test($fail) {}
+
+	test();
+
 	return View::home($vars);
 });
 
 /*
- * 404 error
+ * 404 not found
  */
-Route::error('404', function() {
+Route::not_found(function() {
+	if(Request::cli()) return Cli::write('No routes matched', 'light_red');
 	return Response::error(404);
 });

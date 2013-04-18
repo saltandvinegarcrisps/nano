@@ -35,7 +35,7 @@ Autoloader::directory(array(
 /**
  * Register composer autoloader
  */
-require PATH . 'vendor/autoload' . EXT;
+file_exists($composer = PATH . 'vendor/autoload' . EXT) and require $composer;
 
 /**
  * Import defined routes
