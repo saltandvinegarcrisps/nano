@@ -1,5 +1,8 @@
 <?php
 
+/*
+ * Class aliases
+ */
 return array(
 	'Arr' => 'System\\Arr',
 	'Autoloader' => 'System\\Autoloader',

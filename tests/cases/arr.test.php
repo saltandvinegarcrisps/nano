@@ -21,7 +21,7 @@ class ArrTest extends PHPUnit_Framework_TestCase {
 	}
 
 	public function testErase()  {
-		Arr::erase($this->payload, 'books.first.author', 'First Author');
+		Arr::erase($this->payload, 'books.first.author');
 
 		$this->assertEquals(Arr::get($this->payload, 'books.first.author'), null);
 	}

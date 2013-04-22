@@ -10,6 +10,7 @@
  * @copyright	http://unlicense.org/
  */
 
+define('START_TIME', microtime(true));
 define('DS', DIRECTORY_SEPARATOR);
 define('ENV', getenv('APP_ENV'));
 

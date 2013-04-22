@@ -14,7 +14,7 @@ return array(
 	'cookie' => 'nano',
 
 	/*
-	 * Session database table name when used with the database driver
+	 * Session database table name when used with the 'database' driver
 	 */
 	'table' => 'sessions',
 

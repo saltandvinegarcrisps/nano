@@ -12,11 +12,15 @@
 
 use Exception;
 use System\Error\Message;
+use System\Response;
 
 class Html extends Message {
 
 	/**
 	 * Highlight code snippet
+	 *
+	 * @param string
+	 * @return string
 	 */
 	private function highlight($string) {
 		$patterns = array(
@@ -35,6 +39,8 @@ class Html extends Message {
 
 	/**
 	 * Create a pretty stack trace
+	 *
+	 * @return string
 	 */
 	private function trace() {
 		$trace = '';
@@ -74,8 +80,11 @@ class Html extends Message {
 
 	/**
 	 * Get the context form the file
+	 *
+	 * @param int
+	 * @return string
 	 */
-	private function context($padding = 10) {
+	private function context($padding = 6) {
 		$lines = file($this->exception->getFile());
 		$total = count($lines);
 
@@ -106,20 +115,25 @@ class Html extends Message {
 	 * Output pretty html
 	 */
 	public function response() {
-		$file = substr($this->exception->getFile(), strlen(PATH));
+		if($this->detailed) {
+			$file = substr($this->exception->getFile(), strlen(PATH));
 
-		$html = file_get_contents(SYS . 'error/html/body.html');
+			$html = file_get_contents(SYS . 'error/html/body.html');
 
-		$vars = array(
-			'{{styles}}' => file_get_contents(SYS . 'error/html/styles.css'),
-			'{{message}}' => $this->exception->getMessage(),
-			'{{file}}' => $file,
-			'{{line}}' => $this->exception->getLine(),
-			'{{trace}}' => $this->trace(),
-			'{{context}}' => $this->context(),
-		);
+			$vars = array(
+				'{{styles}}' => file_get_contents(SYS . 'error/html/styles.css'),
+				'{{message}}' => $this->exception->getMessage(),
+				'{{file}}' => $file,
+				'{{line}}' => $this->exception->getLine(),
+				'{{trace}}' => $this->trace(),
+				'{{context}}' => $this->context(),
+			);
 
-		echo str_replace(array_keys($vars), array_values($vars), $html);
+			Response::create(str_replace(array_keys($vars), array_values($vars), $html), 500)->send();
+		}
+		else {
+			Response::error(500)->send();
+		}
 	}
 
 }
