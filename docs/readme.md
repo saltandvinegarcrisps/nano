@@ -65,27 +65,37 @@ In `app/config/app.php` the url is set to `blog` like so `'url' => '/blog'`
 
 # Libraries
 
-These are the built in classes nano armed with to provide basic functionality.
+These are the built in classes nano is armed with.
 
 ## Arr
 
 Array helper
 
+`Arr::create`
+
 	$arr = Arr::create(['one', 'two', 'three']);
+
+`Arr::first`
 
 	// return the first element
 	$arr->first(); // one
 
+`Arr::last`
+
 	// return the last element
 	$arr->last(); // three
+
+`Arr::shuffle`
 
 	// shuffle and then return the first element
 	$arr->shuffle()->first();
 
-	// static methods
+`Arr::get`
 
 	// return element at index 0
 	Arr::get(['one', 'two', 'three'], 0); // one
+
+`Arr::set`
 
 	$myarray = ['one', 'two', 'three'];
 
