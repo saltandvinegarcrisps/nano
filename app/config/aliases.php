@@ -6,7 +6,6 @@
 return array(
 	'Arr' => 'System\\Arr',
 	'Autoloader' => 'System\\Autoloader',
-	'Cli' => 'System\\Cli',
 	'Config' => 'System\\Config',
 	'Cookie' => 'System\\Cookie',
 	'DB' => 'System\\Database',
