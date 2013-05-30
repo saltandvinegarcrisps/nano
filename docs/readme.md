@@ -1,7 +1,7 @@
 ## Nano Documentation
 
-- Getting started
-- Your App
+- [Getting started](#getting-started)
+- [Your App](#your-app)
 	- Config
 		- Aliases
 		- App
@@ -14,9 +14,9 @@
 	- Storage
 	- Views
 	- Routing
-- Helper functions
-- Libraries
-	- Arr
+- [Helper functions](#helper-functions)
+- [Libraries](#libraries)
+	- [Arr](#arr)
 	- Autoloader
 	- Config
 	- Cookie
@@ -55,13 +55,33 @@ In `app/config/app.php` the url is set to `blog` like so `'url' => '/blog'`
 
 `uri_to($uri)`
 
+Returns a relative url to your app with the appended uri
+
+	uri_to('home'); // returns `/blog/home`
+
 `dd()`
+
+Returns the `var_dump` or arguments and exits.
+
+	dd($sql, $statement);
 
 `noise($size = 32)`
 
+Returns a alpahnum string of specified length
+
+	noise(10); // hsU7E7sh6R
+
 `normalize($str)`
 
+Returns the ascii conversion of the argument
+
+	normalize('Hállo'); // Hallo
+
 `e($str)`
+
+Returns the HTML entities of the argument using the app character encoding.
+
+	e('<b>'); // &lt;b&gt;
 
 # Libraries
 
