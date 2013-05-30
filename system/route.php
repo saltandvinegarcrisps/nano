@@ -10,10 +10,11 @@
  * @copyright	http://unlicense.org/
  */
 
-use InvalidArgumentException;
-use Response;
-use View;
 use Closure;
+use InvalidArgumentException;
+use System\Response;
+use System\Router;
+use System\View;
 
 class Route {
 
@@ -64,7 +65,7 @@ class Route {
 		}
 
 		// add collection actions
-		$arguments = array_merge($arguments, static::$collection);
+		$arguments = array_merge($arguments, (array) end(static::$collection));
 
 		foreach((array) $patterns as $pattern) {
 			Router::$routes[$method][$pattern] = $arguments;
@@ -102,13 +103,13 @@ class Route {
 	 */
 	public static function collection($actions, $definitions) {
 		// start collection
-		static::$collection = $actions;
+		static::$collection[] = $actions;
 
 		// run definitions
 		call_user_func($definitions);
 
 		// end of collection
-		static::$collection = array();
+		array_pop(static::$collection);
 	}
 
 	/**
@@ -168,17 +169,25 @@ class Route {
 		// Call any after actions
 		$this->after($response);
 
-		// If the response was a view get the output and create response
-		if($response instanceof View) {
-			return Response::create($response->yield());
-		}
-
 		// If we have a response object return it
 		if($response instanceof Response) {
 			return $response;
 		}
 
-		return Response::create((string) $response);
+		// If the response was a view get the output and create response
+		if($response instanceof View) {
+			$response = $response->yield();
+		}
+		// Invoke object tostring method
+		elseif(is_object($response) and method_exists($response, '__toString')) {
+			$response = (string) $response;
+		}
+		// capture any echo'd output
+		elseif(ob_get_length()) {
+			$response = ob_get_clean();
+		}
+
+		return Response::create($response);
 	}
 
 }

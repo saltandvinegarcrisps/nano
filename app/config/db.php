@@ -23,7 +23,8 @@ return array(
 	'connections' => array(
 		'sqlite' => array(
 			'driver' => 'sqlite',
-			'database' => ':memory:'
+			'database' => ':memory:',
+			'prefix' => ''
 		),
 
 		'mysql' => array(
@@ -33,7 +34,8 @@ return array(
 			'username' => 'root',
 			'password' => '',
 			'database' => '',
-			'charset' => 'utf8'
+			'charset' => 'utf8',
+			'prefix' => ''
 		)
 	)
 );
