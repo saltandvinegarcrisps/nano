@@ -20,8 +20,9 @@ switch(constant('ENV')) {
 		break;
 
 	default:
-		ini_set('display_error', false);
+		ini_set('display_error', true);
 		error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
+		break;
 }
 
 /*
