@@ -79,7 +79,7 @@ class View {
 	 *
 	 * @return string
 	 */
-	public function yield() {
+	public function render() {
 		ob_start();
 
 		extract($this->vars);
