@@ -63,7 +63,9 @@ class Error {
 	 * @param array
 	 */
 	public static function native($code, $message, $file, $line) {
-		static::exception(new ErrorException($message, $code, 0, $file, $line));
+		if($code & error_reporting()) {
+			static::exception(new ErrorException($message, $code, 0, $file, $line));
+		}
 	}
 
 	/**
