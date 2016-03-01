@@ -2,13 +2,6 @@
 
 Nano size PHP 5.3.6+ framework
 
-### Features
-
-- PSR-0 Autoloading
-- Database (mysql, sqlite)
-- RESTful Routing
-- Session management (database, memcache, cookies)
-
 #### Hello world
 
 `app/routes.php`
