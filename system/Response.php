@@ -63,17 +63,6 @@ class Response {
 	}
 
 	/**
-	 * Creates a response with the output as error view from the app
-	 * along with the status code
-	 *
-	 * @param int
-	 * @return object
-	 */
-	public static function error($status, $vars = array()) {
-		return static::create(View::create('error/' . $status, $vars)->render(), $status);
-	}
-
-	/**
 	 * Creates a response with the output as JSON
 	 *
 	 * @param string

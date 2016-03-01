@@ -19,4 +19,4 @@ define('APP', PATH . 'app' . DS);
 define('SYS', PATH . 'system' . DS);
 define('EXT', '.php');
 
-require SYS . 'start' . EXT;
+require APP . 'run' . EXT;

@@ -19,7 +19,7 @@
  * @return string
  */
 function asset($uri) {
-	return rtrim(Config::app('url'), '/') . '/' . $uri;
+	return rtrim(System\Config::app('url'), '/') . '/' . $uri;
 }
 
 /**
@@ -29,7 +29,7 @@ function asset($uri) {
  * @return string
  */
 function uri_to($uri) {
-	return Uri::to($uri);
+	return System\Uri::to($uri);
 }
 
 /**
@@ -53,9 +53,11 @@ function dd() {
  * @return string
  */
 function noise($size = 32) {
+	$factory = new RandomLib\Factory;
+	$generator = $factory->getLowStrengthGenerator();
 	$pool = 'abcefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
 
-	return substr(str_shuffle(str_repeat($pool, 3)), 0, $size);
+	return $generator->generateString($size, $pool);
 }
 
 /**
@@ -76,5 +78,5 @@ function normalize($str) {
  * Encode html to entities
  */
 function e($str) {
-	return htmlspecialchars($str, ENT_NOQUOTES, Config::app('encoding'), false);
+	return htmlspecialchars($str, ENT_NOQUOTES, System\Config::app('encoding'), false);
 }

@@ -19,9 +19,9 @@ class Error {
 	 * Register Exception handler
 	 */
 	public static function register() {
-		set_exception_handler(array('Error', 'exception'));
-		set_error_handler(array('Error', 'native'));
-		register_shutdown_function(array('Error', 'shutdown'));
+		set_exception_handler(array('System\\Error', 'exception'));
+		set_error_handler(array('System\\Error', 'native'));
+		register_shutdown_function(array('System\\Error', 'shutdown'));
 	}
 
 	/**
@@ -40,13 +40,8 @@ class Error {
 	public static function exception(Exception $e) {
 		static::log($e);
 
-		// get a error response handler
-		$handler = Error\Report::handler($e, Config::error('report'));
+		echo $e;
 
-		// generate the output
-		$handler->response();
-
-		// exit with a error code
 		exit(1);
 	}
 
